@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding-PlayGround</title>
+    <style>
+        body, html{
+            font-family: monospace;
+        }
+        /* Header */
+        .head{
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .nav a {
+            text-decoration: none;
+            color: black;
+            padding: 0 10px;
+            font-size: 18px;
+        }
+        .logo img{
+            padding-right: 20px;
+            height: 100px;
+        }
+
+        /* Main */
+        .main {
+            margin: 15% auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+        }
+        .main-content span {
+            font-size: 48px;
+            color: rgb(41, 37, 37);
+            text-align: center;
+        }
+        /* @keyframes rgbGlow {
+            0% { text-shadow: 1px 1px 5px rgb(255, 0, 0); }
+            33% { text-shadow: 1px 1px 5px rgb(0, 255, 0); }
+            66% { text-shadow: 1px 1px 5px rgb(0, 0, 255); }
+            100% { text-shadow: 1px 1px 5px rgb(255, 0, 0); }
+        } */
+
+        /* Reference */
+        .Reference_page{
+            margin: 15% auto;
+        }
+        .Reference p{
+            padding-left: 5%;
+            padding-top: 5%;
+        }
+        .Reference .cards{
+            padding-top: 10%;
+            padding-left: 50%;
+        }
+        .Reference-content{
+            display: flex;
+            justify-content: space-between;
+        }
+        .Reference-content a{
+            text-decoration: underline;
+            font-size: 15px;
+        }
+
+        /* How it works */
+        .How_it_works {
+            margin: 15% auto;
+        }
+
+        .how-it-works-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .how-it-works-header a {
+            text-decoration: underline;
+            font-size: 15px;
+        }
+
+        /* Footer */
+        .footer{
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+     <header>
+
+        <div class="head">
+
+            <div class="logo">
+
+                <img src="Images/Coding_PlayGround-removebg-preview.png" alt="logo">
+
+            </div>
+
+            <div class="nav">
+
+                <a href="home_page.html">PlayGround</a>
+                <a href="about.html">Documentation</a>
+                <a href="services.html">Sign-in/Log-in</a>
+
+            </div>
+
+            <div class="light-dark-button">
+
+            </div>
+
+        </div>
+
+     </header>
+
+    <!-- Main -->
+     <div class="main">
+        <div class="main-content">
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0s;">C</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.125s;">o</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.25s;">d</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.375s;">i</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.5s;">n</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.625s;">g</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.75s;">P</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 0.875s;">l</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1s;">a</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.125s;">y</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.25s;">G</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.375s;">r</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.5s;">o</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.625s;">u</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.75s;">n</span>
+            <span style="animation: rgbGlow 2s infinite; animation-delay: 1.875s;">d</span>
+        </div>
+     </div>
+
+    <!-- Reference page -->
+     <div class="Reference_page">
+
+        <div class="Reference">
+
+            <div class="Reference-content">
+                <h2>Reference Projects</h2>
+                <div class="line"></div>
+                <a>View All Demo Projects</a>
+            </div>
+
+            <p>Click on the Links Below The projects to access them</p>
+
+            <div class="cards">
+                <table>
+                    <tr>
+                        <td>
+                            <img src="Images/project1.jpg" alt="Project 1" style="width:200px; height:150px;">
+                            <p><a href="project1.html">Project 1</a></p>
+                            <p>Brief description of Project 1</p>
+                        </td>
+                        <td>
+                            <img src="Images/project2.jpg" alt="Project 2" style="width:200px; height:150px;">
+                            <p><a href="project2.html">Project 2</a></p>
+                            <p>Brief description of Project 2</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+     </div>
+
+     <!-- How it works -->
+        <div class="How_it_works">
+           <div class="How_it_works-content"></div>
+              <div class="how-it-works-header">
+                 <h2>How it works</h2>
+                 <div class="line"></div>
+                 <a>View Documentation</a>
+              </div>
+
+              <p style="padding-left: 5%; padding-top: 5%;">Read about how things work in this Web-site</p>
+
+              <div style="padding-top: 10%; padding-left: 50%;">
+                <table>
+                    <tr>
+                        <td>
+                            <img src="Images/tutorial1.jpg" alt="Tutorial 1" style="width:200px; height:150px;">
+                            <p><a href="tutorial1.html">Tutorial 1</a></p>
+                            <p>Brief description of Tutorial 1</p>
+                        </td>
+                        <td>
+                            <img src="Images/tutorial2.jpg" alt="Tutorial 2" style="width:200px; height:150px;">
+                            <p><a href="tutorial2.html">Tutorial 2</a></p>
+                            <p>Brief description of Tutorial 2</p>
+                        </td>
+                    </tr>
+                </table>
+                 
+              </div>
+           </div>
+        </div>
+
+    <!-- Footer -->
+        <footer>
+    
+            <div class="footer">
+    
+                <div class="footer-content">
+    
+                    <h2>Follow Us</h2>
+    
+                    <a href="https://www.facebook.com/">Facebook</a>
+                    <a href="https://www.instagram.com/">Instagram</a>
+                    <a href="https://www.twitter.com/">Twitter</a>
+                    <a href="https://www.linkedin.com/">LinkedIn</a>
+    
+                </div>
+    
+            </div>
+    
+        </footer>
+</body>
