@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Playground Page</title>
+    <style>
+        body, html{
+            font-family: monospace;
+        }
+        /* Header */
+        .head{
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .nav a {
+            text-decoration: none;
+            color: black;
+            padding: 0 10px;
+            font-size: 18px;
+        }
+        .logo img{
+            padding-right: 20px;
+            height: 100px;
+        }
+
+        /* Welcome */
+        .welcome{
+            font-size: 35px;
+            padding-left: 5%;
+            padding-top: 2%;
+        }
+
+        /* create button */
+        .create_project{
+            padding-left: 7%;
+            padding-top: 4%;
+        }
+        .project_button{
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .project_button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+
+        <div class="head">
+
+            <div class="logo">
+
+                <img src="Images/Coding_PlayGround-removebg-preview.png" alt="logo">
+
+            </div>
+
+            <div class="nav">
+
+                <a href="home_page.html">PlayGround</a>
+                <a href="about.html">Documentation</a>
+
+            </div>
+
+            <div class="light-dark-button">
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!--Welcome para-->
+    <div class="welcome">
+        <h1>
+            Welcome to PlayGround
+        </h1>
+    </div>
+
+    <!--Button for creating a new project-->
+    <div class="create_project">
+        <button class="project_button">
+            Create new Project
+        </button>
+    </div>
+</body>
+</html>
