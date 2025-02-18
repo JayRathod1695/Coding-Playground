@@ -1,6 +1,30 @@
+<!--
+    ===============================
+    Home Page HTML File (home_page.html)
+    Purpose: This page is the main landing page for the Coding Playground project.
+    It includes:
+      - A header with the logo, navigation links, and a light/dark toggle placeholder.
+      - A main content section displaying animated text for the project name.
+      - A Reference Projects section with demo projects and links.
+      - A How It Works section with tutorials and documentation links.
+      - A footer with social media links.
+    Each HTML block is styled by the corresponding CSS rules defined in the <style> section inside the <head>.
+    ===============================
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- 
+        Meta, title and styling block:
+        - Sets the character encoding and viewport settings.
+        - The <title> tag defines the browser tab title.
+        - The <style> block below contains CSS rules for various classes:
+            * Global styles for body, html (applied monospace font).
+            * Styles for .head, .nav a, .logo img define the header look.
+            * .main and .main-content styling control the arrangement and animation of the primary text.
+            * .Reference_page, .Reference, .cards, .Reference-content manage the demo projects section.
+            * Additional styles for How It Works and footer are also defined.
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coding-PlayGround</title>
@@ -8,7 +32,7 @@
         body, html{
             font-family: monospace;
         }
-        /* Header */
+        /* Header styles */
         .head{
             display: flex;
             align-items: center;
@@ -24,8 +48,7 @@
             padding-right: 20px;
             height: 100px;
         }
-
-        /* Main */
+        /* Main content area styling */
         .main {
             margin: 15% auto;
             display: flex;
@@ -38,14 +61,7 @@
             color: rgb(41, 37, 37);
             text-align: center;
         }
-        /* @keyframes rgbGlow {
-            0% { text-shadow: 1px 1px 5px rgb(255, 0, 0); }
-            33% { text-shadow: 1px 1px 5px rgb(0, 255, 0); }
-            66% { text-shadow: 1px 1px 5px rgb(0, 0, 255); }
-            100% { text-shadow: 1px 1px 5px rgb(255, 0, 0); }
-        } */
-
-        /* Reference */
+        /* Reference Projects section styling */
         .Reference_page{
             margin: 15% auto;
         }
@@ -65,23 +81,19 @@
             text-decoration: underline;
             font-size: 15px;
         }
-
-        /* How it works */
+        /* How It Works section styling */
         .How_it_works {
             margin: 15% auto;
         }
-
         .how-it-works-header {
             display: flex;
             justify-content: space-between;
         }
-
         .how-it-works-header a {
             text-decoration: underline;
             font-size: 15px;
         }
-
-        /* Footer */
+        /* Footer section styling */
         .footer{
             display: flex;
             justify-content: center;
@@ -89,37 +101,37 @@
     </style>
 </head>
 <body>
-    
-    <!-- Header -->
-     <header>
-
+    <!-- 
+         Header Block:
+         Purpose: Contains the site header with logo, navigation links and a placeholder for a light/dark theme toggle.
+         Connected CSS: .head, .logo img, .nav a, .light-dark-button
+    -->
+    <header>
         <div class="head">
-
+            <!-- Logo block: Clicking the logo navigates to the home page -->
             <div class="logo">
-
                 <a href="home_page.html">
-                    <img src="Images/Coding_PlayGround-removebg-preview.png" alt="logo">
+                    <img src="Coding_PlayGround-removebg-preview.png" alt="logo">
                 </a>
-
             </div>
-
+            <!-- Navigation block: Contains links to other pages -->
             <div class="nav">
-
                 <a href="playground_page.html">PlayGround</a>
                 <a href="documentation_page.html">Documentation</a>
                 <a href="log_in_page.html">Sign-in/Log-in</a>
-
             </div>
-
+            <!-- Light/dark theme toggle placeholder -->
             <div class="light-dark-button">
-
+                <!-- No functionality added yet -->
             </div>
-
         </div>
-
      </header>
 
-    <!-- Main -->
+    <!-- 
+         Main Content Block:
+         Purpose: Displays the animated project title "CodingPlayGround".
+         Connected CSS: .main, .main-content span (each span uses inline CSS for animation delay and font styling)
+    -->
      <div class="main">
         <div class="main-content">
             <span style="animation: rgbGlow 2s infinite; animation-delay: 0s;">C</span>
@@ -141,19 +153,22 @@
         </div>
      </div>
 
-    <!-- Reference page -->
+    <!-- 
+         Reference Projects Section Block:
+         Purpose: Provides links and previews to reference/demo projects.
+         Connected CSS: .Reference_page, .Reference, .Reference-content, .cards
+         Details:
+            - Displays a heading and a link ("View All Demo Projects").
+            - Contains a table with project preview images, links, and brief descriptions.
+    -->
      <div class="Reference_page">
-
         <div class="Reference">
-
             <div class="Reference-content">
                 <h2>Reference Projects</h2>
                 <div class="line"></div>
                 <a>View All Demo Projects</a>
             </div>
-
             <p>Click on the Links Below The projects to access them</p>
-
             <div class="cards">
                 <table>
                     <tr>
@@ -170,23 +185,27 @@
                     </tr>
                 </table>
             </div>
-
         </div>
-
      </div>
 
-     <!-- How it works -->
-        <div class="How_it_works">
+    <!-- 
+         How It Works Section Block:
+         Purpose: Provides information on how the website works along with links to tutorials/documentation.
+         Connected CSS: .How_it_works, .how-it-works-header
+         Details:
+            - Contains a header with title and "View Documentation" link.
+            - Provides a brief description paragraph.
+            - Displays a table with tutorial preview images, links, and brief descriptions.
+    -->
+     <div class="How_it_works">
            <div class="How_it_works-content"></div>
-              <div class="how-it-works-header">
+           <div class="how-it-works-header">
                  <h2>How it works</h2>
                  <div class="line"></div>
                  <a>View Documentation</a>
-              </div>
-
-              <p style="padding-left: 5%; padding-top: 5%;">Read about how things work in this Web-site</p>
-
-              <div style="padding-top: 10%; padding-left: 50%;">
+           </div>
+           <p style="padding-left: 5%; padding-top: 5%;">Read about how things work in this Web-site</p>
+           <div style="padding-top: 10%; padding-left: 50%;">
                 <table>
                     <tr>
                         <td>
@@ -201,28 +220,26 @@
                         </td>
                     </tr>
                 </table>
-                 
-              </div>
            </div>
-        </div>
+     </div>
 
-    <!-- Footer -->
-        <footer>
-    
-            <div class="footer">
-    
-                <div class="footer-content">
-    
-                    <h2>Follow Us</h2>
-    
-                    <a href="https://www.facebook.com/">Facebook</a>
-                    <a href="https://www.instagram.com/">Instagram</a>
-                    <a href="https://www.twitter.com/">Twitter</a>
-                    <a href="https://www.linkedin.com/">LinkedIn</a>
-    
-                </div>
-    
+    <!-- 
+         Footer Block:
+         Purpose: Contains social media follow links.
+         Connected CSS: .footer
+         Details:
+            - Provides links to various social media platforms.
+    -->
+    <footer>
+        <div class="footer">
+            <div class="footer-content">
+                <h2>Follow Us</h2>
+                <a href="https://www.facebook.com/">Facebook</a>
+                <a href="https://www.instagram.com/">Instagram</a>
+                <a href="https://www.twitter.com/">Twitter</a>
+                <a href="https://www.linkedin.com/">LinkedIn</a>
             </div>
-    
-        </footer>
+        </div>
+    </footer>
 </body>
+</html>

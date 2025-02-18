@@ -121,7 +121,7 @@
 </head>
 <body>
     <div class="logo-container">
-        <img src="Images/Coding_PlayGround-removebg-preview.png" alt="Company Logo" draggable="false">
+        <img src="Coding_PlayGround-removebg-preview.png" alt="Company Logo" draggable="false">
     </div>
     
     <h1 class="login-title">Sign in to your account</h1>
@@ -139,36 +139,104 @@
             </div>
             
             <div class="d-flex justify-content-between align-items-center mb-4">
+                <!-- Checkbox block for "Remember me" functionality -->
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="remember">
                     <label class="form-check-label" for="remember">Remember me</label>
                 </div>
+                <!-- "Forgot password?" link for account recovery -->
                 <a href="#" class="text-decoration-none">Forgot password?</a>
             </div>
             
+            <!-- Submit button for standard email/password login -->
             <button type="submit" class="btn btn-primary w-100 py-2" style="background-color: rgb(9, 200, 9);border: green;">Sign in</button>
         </form>
 
+        <!-- Divider block to separate standard login from social logins -->
         <div class="divider">
+            <!-- The span provides a visual separator with the text "or" -->
             <span class="px-2 bg-white">or</span>
         </div>
 
+        <!-- Social login button for Google authentication -->
         <button class="btn btn-outline-dark social-btn">
             <i class="fab fa-google"></i>
             Sign in with Google
         </button>
         
+        <!-- Social login button for GitHub authentication -->
         <button class="btn btn-dark social-btn">
             <i class="fab fa-github"></i>
             Sign in with GitHub
         </button>
     </div>
 
+    <!-- 
+         Sign-up Prompt Block:
+         Purpose: Provides a link for users who do not have an account to sign up.
+         Connected CSS: 'signup-prompt' class for layout and text styling.
+    -->
     <div class="signup-prompt">
         Don't have an account? <a href="sign_up_page.html" class="fw-medium">Sign up</a>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- 
+         Bootstrap JS Inclusion:
+         Purpose: Loads necessary Bootstrap JavaScript functionality for components such as modals, dropdowns, etc.
+         Note: This script should be loaded after the page content to improve performance.
+    -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 
+         Login Form Submission Script Block:
+         Purpose: Intercepts the standard form submission, performs client-side logic and sends an AJAX POST request to the Flask /login endpoint.
+         Details:
+           - Grabs input email and password values from the form.
+           - Prepares a JSON object (loginData) with email (as username) and password_hash.
+           - Sends a POST request to the local server ('http://127.0.0.1:5000/login').
+           - Processes the JSON response:
+               * If login is successful, alerts the user and redirects them to the home page.
+               * Otherwise, displays an alert for invalid credentials.
+           - Provides error handling in case of communication issues.
+         Connected CSS: Uses Bootstrap classes for styling form and buttons.
+    -->
+    <script>
+      // Intercept form submission for user login.
+      document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent the default form submission behavior
+
+        // Grab input values from the form fields.
+        let email = document.querySelector('input[type="email"]').value;
+        let password = document.querySelector('input[type="password"]').value;
+
+        // Prepare login data object (using email as username).
+        let loginData = {
+          username: email,
+          password_hash: password    // In production, password hashing should be handled server-side.
+        };
+
+        // Send the login data to the Flask /login endpoint using fetch API.
+        fetch('http://127.0.0.1:5000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(loginData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Check if login was successful. If yes, notify the user and redirect to home page.
+          if (data.message && data.message.toLowerCase().includes("successful")) {
+            alert("Sign in successful!");
+            // Redirect to home page (adjust the URL as required).
+            window.location.href = "home_page.html";
+          } else {
+            alert("Invalid credentials. Please try again.");
+          }
+        })
+        .catch(error => {
+          console.error("Error during login:", error);
+          alert("Login failed. Please try again later.");
+        });
+      });
+    </script>
 </body>
 </html>

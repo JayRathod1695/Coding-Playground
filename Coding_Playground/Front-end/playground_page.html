@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags for character set and viewport settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title of the page -->
+    <title>My Playground Page</title>
+    <style>
+        /* General styles for the body and html elements */
+        body, html{
+            font-family: monospace;
+        }
+        /* Header styles */
+        .head{
+            /* Flexbox to align items horizontally */
+            display: flex;
+            /* Align items vertically in the center */
+            align-items: center;
+            /* Adds a shadow to the bottom of the header */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        /* Navigation link styles */
+        .nav a {
+            /* Removes underline from links */
+            text-decoration: none;
+            /* Sets the color of the links to black */
+            color: black;
+            /* Adds padding around the links */
+            padding: 0 10px;
+            /* Sets the font size of the links */
+            font-size: 18px;
+        }
+        /* Logo styles */
+        .logo img{
+            /* Adds padding to the right of the logo */
+            padding-right: 20px;
+            /* Sets the height of the logo */
+            height: 100px;
+        }
+
+        /* Welcome message styles */
+        .welcome{
+            /* Sets the font size of the welcome message */
+            font-size: 35px;
+            /* Adds padding to the left of the welcome message */
+            padding-left: 5%;
+            /* Adds padding to the top of the welcome message */
+            padding-top: 2%;
+        }
+
+        /* Create button styles */
+        .create_project{
+            /* Adds padding to the left of the create project button */
+            padding-left: 7%;
+            /* Adds padding to the top of the create project button */
+            padding-top: 4%;
+        }
+        /* Project button styles */
+        .project_button{
+            /* Adds padding to the button */
+            padding: 15px 30px;
+            /* Sets the font size of the button */
+            font-size: 18px;
+            /* Rounds the corners of the button */
+            border-radius: 10px;
+            /* Removes the border from the button */
+            border: none;
+            /* Sets the background color of the button */
+            background-color: #4CAF50;
+            /* Sets the text color of the button */
+            color: white;
+            /* Changes the cursor to a pointer on hover */
+            cursor: pointer;
+            /* Adds a transition effect to the background color */
+            transition: background-color 0.3s;
+        }
+        /* Project button hover styles */
+        .project_button:hover {
+            /* Darkens the background color on hover */
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header section -->
+    <header>
+
+        <!-- Header container -->
+        <div class="head">
+
+            <!-- Logo section -->
+            <div class="logo">
+
+                <!-- Link to the home page -->
+                <a href="home_page.html">
+                    <!-- Image for the logo -->
+                    <img src="Coding_PlayGround-removebg-preview.png" alt="logo">
+                </a>
+
+            </div>
+
+            <!-- Navigation section -->
+            <div class="nav">
+
+                <!-- Link to the playground page -->
+                <a href="playground_page.html">PlayGround</a>
+                <!-- Link to the documentation page -->
+                <a href="documentation_page.html">Documentation</a>
+
+            </div>
+
+            <!-- Light/dark mode button (currently empty) -->
+            <div class="light-dark-button">
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- Welcome message section -->
+    <div class="welcome">
+        <h1>
+            Welcome to PlayGround
+        </h1>
+    </div>
+
+    <!-- Create new project button section -->
+    <div class="create_project">
+        <button class="project_button">
+            <!-- Link inside the button to the playground panel page -->
+            <a href="palyground_pannel_page.html" style="text-decoration: none; color: white;">
+                Create new Project
+            </a>
+        </button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!--
+    ================================
+    Documentation Page HTML File
+    File: documentation_page.html
+    Purpose: This page serves as the Documentation section for the Coding Playground project.
+    The following blocks are organized as:
+      - DOCTYPE and <html> block: Declares the document type and language settings.
+      - <head> block: Contains metadata, title, and inline CSS styles that define the appearance
+          of the header and documentation text.
+      - <body> block: Contains the header with logo and navigation, followed by the documentation content.
+    The CSS in the <head> block is directly connected to the HTML elements via class selectors.
+    ================================
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 
+        Meta Charset and Viewport Settings Block:
+        Purpose: Defines character encoding (UTF-8) and sets the viewport for responsiveness.
+        This ensures proper scaling on mobile devices.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 
+        Title Block:
+        Purpose: Sets the title of the documentation page as seen in browser tabs.
+    -->
+    <title>Documentation Page</title>
+    
+    <!-- 
+         Inline CSS Styles Block:
+         Purpose: Defines styling for the documentation page including fonts, header appearance,
+         navigation links, logo sizing and placement, and documentation text styling.
+         Explanation of Connected Elements:
+            - Global style 'body, html' applies monospace font to the entire document.
+            - The '.head' class styles the header container with flex, alignment, and box-shadow.
+            - The '.nav a' selector styles the navigation links in the header.
+            - The '.logo img' selector controls the logo image's padding and height.
+            - The '.documenatation' class (note: spelling might be intentional) styles the documentation content section.
+    -->
+    <style>
+        body, html{
+            font-family: monospace;
+        }
+        /* Header */
+        .head{
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .nav a {
+            text-decoration: none;
+            color: black;
+            padding: 0 10px;
+            font-size: 18px;
+        }
+        .logo img{
+            padding-right: 20px;
+            height: 100px;
+        }
+
+        /* Documentation */
+        .documenatation{
+            font-size: 35px;
+            padding-left: 5%;
+            padding-top: 2%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 
+         Header Section Block:
+         Purpose: Creates the header bar that includes the logo (linked to home_page.html) and the navigation menu.
+         Details:
+           - The header contains a container (class "head") that holds three sub-blocks: 
+             1. Logo: Contains the project logo image inside an anchor tag for navigation.
+             2. Navigation: Provides links (anchor elements) to "PlayGround" and "Documentation" pages.
+             3. Light/Dark Button: A placeholder block for future theme toggle functionality.
+         Connection:
+           - The CSS classes ".head", ".logo", and ".nav a" define the look and feel here.
+    -->
+    <header>
+        <div class="head">
+            <div class="logo">
+                <!-- Logo is hyperlinked to the home page -->
+                <a href="home_page.html">
+                    <img src="Coding_PlayGround-removebg-preview.png" alt="logo">
+                </a>
+            </div>
+            <div class="nav">
+                <!-- Navigation Links: These anchors are styled using .nav a CSS selector -->
+                <a href="playground_page.html">PlayGround</a>
+                <a href="documentation_page.html">Documentation</a>
+            </div>
+            <div class="light-dark-button">
+                <!--
+                    This block is reserved for a light/dark theme toggle button.
+                    No content added yet.
+                -->
+            </div>
+        </div>
+    </header>
+
+    <!-- 
+         Documentation Content Block:
+         Purpose: This block contains the main documentation content.
+         Details:
+           - It is wrapped in a <div> with the class "documenatation".
+           - The CSS applied to .documenatation sets a large font size and padding around the text.
+    -->
+    <div class="documenatation">
+        <h1>
+            Documenatation
+        </h1>
+    </div>
+</body>
+</html>

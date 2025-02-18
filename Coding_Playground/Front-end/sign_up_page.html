@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta tags for character set and viewport settings -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Sets the title of the HTML document -->
     <title>Sign Up Page</title>
-    <!-- Bootstrap CSS -->
+    <!-- Links to Bootstrap CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    <!-- Links to Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Internal CSS styles for the page -->
     <style>
+        /* Styles for the body of the page */
         body {
             background-color: #f8f9fa;
             min-height: 100vh;
@@ -20,6 +24,7 @@
             padding: 2rem;
         }
 
+        /* Styles for the logo container */
         .logo-container {
             display: flex;
             justify-content: center;
@@ -29,6 +34,7 @@
             max-width: 400px;
         }
 
+        /* Styles for the logo image */
         .logo-container img {
             height: 80px;
             width: auto;
@@ -36,10 +42,12 @@
             transition: transform 0.3s ease;
         }
 
+        /* Styles for the logo image on hover */
         .logo-container img:hover {
             transform: scale(1.5);
         }
 
+        /* Styles for the signup title */
         .signup-title {
             font-size: 1.75rem;
             font-weight: 600;
@@ -48,6 +56,7 @@
             text-align: center;
         }
 
+        /* Styles for the signup container */
         .signup-container {
             background: white;
             padding: 2.5rem;
@@ -57,13 +66,16 @@
             max-width: 400px;
         }
 
+        /* Styles for the divider line */
         .divider {
             text-align: center;
             margin: 1.5rem 0;
             position: relative;
         }
 
+        /* Styles for the divider line before */
         .divider::before,
+        /* Styles for the divider line after */
         .divider::after {
             content: '';
             position: absolute;
@@ -73,9 +85,12 @@
             background-color: #dee2e6;
         }
 
+        /* Styles for the divider line before */
         .divider::before { left: 0; }
+        /* Styles for the divider line after */
         .divider::after { right: 0; }
 
+        /* Styles for the social buttons */
         .social-btn {
             width: 100%;
             margin: 0.5rem 0;
@@ -86,6 +101,7 @@
             gap: 0.5rem;
         }
 
+        /* Styles for the sign-in prompt */
         .signin-prompt {
             text-align: center;
             margin-top: 1.5rem;
@@ -93,64 +109,135 @@
     </style>
 </head>
 <body>
+    <!-- Container for the logo -->
     <div class="logo-container">
-        <img src="Images/Coding_PlayGround-removebg-preview.png" alt="Logo" draggable="false">
+        <!-- Image used as the logo -->
+        <img src="Coding_PlayGround-removebg-preview.png" alt="Logo" draggable="false">
     </div>
 
+    <!-- Title for the signup page -->
     <h1 class="signup-title">Create your account</h1>
 
+    <!-- Container for the signup form -->
     <div class="signup-container">
+        <!-- Form for user signup -->
         <form>
+            <!-- Input field for full name -->
             <div class="mb-3">
+                <!-- Label for the full name input -->
                 <label class="form-label">Full Name</label>
+                <!-- Input field for full name -->
                 <input type="text" class="form-control" required>
             </div>
 
+            <!-- Input field for email address -->
             <div class="mb-3">
+                <!-- Label for the email input -->
                 <label class="form-label">Email address</label>
+                <!-- Input field for email -->
                 <input type="email" class="form-control" required>
             </div>
 
+            <!-- Input field for password -->
             <div class="mb-3">
+                <!-- Label for the password input -->
                 <label class="form-label">Password</label>
+                <!-- Input field for password -->
                 <input type="password" class="form-control" required>
             </div>
 
+            <!-- Input field to confirm password -->
             <div class="mb-3">
+                <!-- Label for the confirm password input -->
                 <label class="form-label">Confirm Password</label>
+                <!-- Input field for confirm password -->
                 <input type="password" class="form-control" required>
             </div>
 
+            <!-- Checkbox for terms and conditions -->
             <div class="mb-3 form-check">
+                <!-- Checkbox input -->
                 <input type="checkbox" class="form-check-input" id="terms" required>
+                <!-- Label for the terms checkbox -->
                 <label class="form-check-label" for="terms">
                     I agree to the Terms of Service and Privacy Policy
                 </label>
             </div>
 
+            <!-- Submit button to create account -->
             <button type="submit" class="btn btn-primary w-100 py-2">Create Account</button>
         </form>
 
+        <!-- Divider line with "or" text -->
         <div class="divider">
             <span class="px-2 bg-white">or</span>
         </div>
 
+        <!-- Button to sign up with Google -->
         <button class="btn btn-outline-dark social-btn">
             <i class="fab fa-google"></i>
             Sign up with Google
         </button>
 
+        <!-- Button to sign up with GitHub -->
         <button class="btn btn-dark social-btn">
             <i class="fab fa-github"></i>
             Sign up with GitHub
         </button>
     </div>
 
+    <!-- Prompt to sign in if already have an account -->
     <div class="signin-prompt">
         Already have an account? <a href="log_in_page.html" class="fw-medium">Sign in</a>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript code for form submission and user registration -->
+    <script>
+      // Intercept form submission for user registration.
+      document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Grab input values:
+        let fullName = document.querySelector('input[type="text"]').value;
+        let email = document.querySelector('input[type="email"]').value;
+        let passwordInputs = document.querySelectorAll('input[type="password"]');
+        let password = passwordInputs[0].value;
+        let confirmPassword = passwordInputs[1].value;
+
+        // Check that passwords match.
+        if (password !== confirmPassword) {
+          alert("Passwords do not match!");
+          return;
+        }
+
+        // Prepare user data (using email as username for this example)
+        let userData = {
+          username: email,             // Using email as username
+          password_hash: password,     // In production, hash on the server before storing.
+          full_name: fullName          // Extra field, if needed.
+        };
+
+        // Send POST request to your Flask /register endpoint.
+        fetch('http://127.0.0.1:5000/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          // After successful registration, redirect to log in page.
+          if (data.message.toLowerCase().includes("success")) {
+            window.location.href = "log_in_page.html";
+          }
+        })
+        .catch(error => {
+          console.error("Error during registration:", error);
+          alert("Registration failed. Please try again later.");
+        });
+      });
+    </script>
 </body>
 </html>

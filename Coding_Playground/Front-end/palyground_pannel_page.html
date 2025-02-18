@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Block Coding</title>
+    
+    <!-- Core Dependencies -->
+    <script src="https://unpkg.com/blockly@6.20210701.0/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly@6.20210701.0/python_compressed.js"></script>
+    
+    <!-- UI Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    
+    <!-- Split.js Library -->
+    <script src="https://unpkg.com/split.js/dist/split.min.js"></script>
+    
+    <!--
+        This CSS defines the layout and styling for a split-panel interface with Blockly workspace and console output.
+    -->
+    <style>
+
+
+        /* 1. Split Container (#split-container)
+           - Creates main container for split panel layout
+           - Takes full viewport height minus navbar (56px)
+           - Uses flexbox for panel arrangement */
+        #split-container {
+            height: calc(100vh - 56px); 
+            display: flex;
+            overflow: hidden;
+        }
+
+
+        /* 2. Left Panel (#left-pane)
+           - Contains Blockly workspace
+           - Prevents content overflow
+           - Uses relative positioning for proper child element placement*/
+        #left-pane {
+            overflow: hidden;
+            position: relative;
+        }
+
+        /*3. Blockly Workspace (#blocklyDiv)
+           - Takes full width and height of left panel
+           - Main area where Blockly blocks are placed and manipulated*/
+        #blocklyDiv {
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* 4. Right Panel (#right-pane)
+           - Houses console output
+           - Dark theme (background: #1e1e1e)
+           - Scrollable vertical overflow
+           - Padding for content spacing */
+        #right-pane {
+            background: #1e1e1e;
+            color: white;
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+
+        /*5. Workspace Column (.workspace-col)
+           - Sets height for workspace area
+           - Removes right padding
+           - Adjusts for navbar height (60px)*/
+        .workspace-col {
+            height: calc(100vh - 60px);
+            padding-right: 0;
+        }
+        
+
+        /*  6. Controls Container (.controls)
+           - Floating controls positioned top-right
+           - High z-index (1000) to stay above other elements
+           - Contains control buttons with 8px spacing */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .controls .btn {
+            margin-left: 8px;
+        }
+
+
+        /*7. Console Column (.console-col)
+           - Fixed width of 300px with min/max constraints
+           - User-resizable horizontally
+           - Separated with dark border
+           - Takes full viewport height minus navbar*/
+        .console-col {
+            width: 300px;
+            min-width: 200px;
+            max-width: 50vw;
+            height: calc(100vh - 60px);
+            resize: horizontal;
+            overflow: auto;
+            border-left: 4px solid #444;
+        }
+
+
+        /* 8. Output Console (#output)
+           - Dark themed console display
+           - Scrollable for overflow content
+           - Full height utilization
+           - White text on dark background */
+        #output {
+            height: 100%;
+            background: #1e1e1e;
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        
+        /* 9. Navigation Bar (nav)
+           - Light themed background
+           - Consistent padding
+           - Contains navigation items with spacing */
+        nav {
+            background-color: #f8f9fa;
+            padding: 10px;
+        }
+        
+        /* Navigation items spacing */
+        nav div {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+
+        /*10. Toast Container (.toast-container)
+            - Fixed position for notifications
+            - Bottom-right corner placement
+            - Used for displaying system messages*/
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+    </style>
+    
+    <!-- Custom Block Definitions and Generators -->
+    <!-- 
+    Begin $SELECTION_PLACEHOLDER$ Code: Custom Blockly Blocks and Python Code Generators for NumPy and Matplotlib.
+    This section defines custom blocks for Blockly that allow users to work with NumPy arrays and Matplotlib plots.
+    Each block function (Blockly.Blocks['block_name']) declares the appearance and inputs for the corresponding block.
+    The following blocks include:
+      • NumPy Blocks to create arrays and perform operations like zeros, ones, random, sum, mean, reshape.
+      • Matplotlib Blocks to create plots (line plot, scatter plot), set titles, labels, and display the plot.
+    The Python generators (Blockly.Python['block_name']) convert the block configuration into valid Python code.
+    This code integrates with the HTML page’s Blockly workspace and connects to CSS for visual styling (colors, tooltips, layout).
+    -->
+
+    <script>
+        // ----------------------- NumPy Blocks -----------------------
+        // NumPy Array Block: Provides a Blockly block to create a NumPy array from a list.
+        Blockly.Blocks['numpy_array'] = {
+            init: function() {
+                // Append a label to indicate the start of numpy array creation.
+                this.appendDummyInput()
+                    .appendField('np.array(');
+                // Provides an input slot for the array values, ensuring the input is of type 'Array'.
+                this.appendValueInput('VALUES')
+                    .setCheck('Array');
+                // Append a closing parenthesis to complete the block syntax.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Declare the block's output as an Array type.
+                this.setOutput(true, 'Array');
+                // Set the block's visual color to 290 to match the NumPy theme.
+                this.setColour(290);
+                // Tooltip to help users understand that this block creates a NumPy array from a provided list.
+                this.setTooltip('Create a NumPy array from list');
+            }
+        };
+
+        // NumPy Zeros Block: Allows creation of an array filled with zeros.
+        Blockly.Blocks['numpy_zeros'] = {
+            init: function() {
+                // Append a label indicating the use of numpy's zeros function.
+                this.appendDummyInput()
+                    .appendField('np.zeros(');
+                // Input field to accept a number representing the shape of the zeros array.
+                this.appendValueInput('SHAPE')
+                    .setCheck('Number');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Set the block's output to be an Array.
+                this.setOutput(true, 'Array');
+                // Set block color consistent with NumPy blocks.
+                this.setColour(290);
+                // Tooltip explains that this block creates an array of zeros.
+                this.setTooltip('Create array of zeros');
+            }
+        };
+
+        // NumPy Ones Block: Allows creation of an array filled with ones.
+        Blockly.Blocks['numpy_ones'] = {
+            init: function() {
+                // Append a label indicating numpy's ones function.
+                this.appendDummyInput()
+                    .appendField('np.ones(');
+                // Input field for a number specifying the shape.
+                this.appendValueInput('SHAPE')
+                    .setCheck('Number');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Define the block's output as an Array.
+                this.setOutput(true, 'Array');
+                // Color code consistent with other NumPy blocks.
+                this.setColour(290);
+                // Tooltip provides details that the block creates an array of ones.
+                this.setTooltip('Create array of ones');
+            }
+        };
+
+        // NumPy Random Block: Generates a random array with values between 0 and 1.
+        Blockly.Blocks['numpy_random'] = {
+            init: function() {
+                // Append a label indicating the numpy random function.
+                this.appendDummyInput()
+                    .appendField('np.random.rand(');
+                // Input field for a number specifying the size of the random array.
+                this.appendValueInput('SIZE')
+                    .setCheck('Number');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Declare the block's output as an Array.
+                this.setOutput(true, 'Array');
+                // Set visual appearance using color 290.
+                this.setColour(290);
+                // Tooltip explains that this block generates a random array with values in [0,1).
+                this.setTooltip('Create random array [0-1)');
+            }
+        };
+
+        // NumPy Sum Block: Computes the sum of the elements in an array.
+        Blockly.Blocks['numpy_sum'] = {
+            init: function() {
+                // Append a label for numpy sum.
+                this.appendDummyInput()
+                    .appendField('np.sum(');
+                // Input slot for an array to sum the elements.
+                this.appendValueInput('ARRAY')
+                    .setCheck('Array');
+                // Append closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Define the block's output as a Number.
+                this.setOutput(true, 'Number');
+                // Maintain consistent color for NumPy blocks.
+                this.setColour(290);
+                // Tooltip explaining that the block sums the array elements.
+                this.setTooltip('Sum of array elements');
+            }
+        };
+
+        // NumPy Mean Block: Calculates the mean (average) of the elements in an array.
+        Blockly.Blocks['numpy_mean'] = {
+            init: function() {
+                // Append a label for numpy mean.
+                this.appendDummyInput()
+                    .appendField('np.mean(');
+                // Provide a slot for the array input.
+                this.appendValueInput('ARRAY')
+                    .setCheck('Array');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Set the block's output type to Number.
+                this.setOutput(true, 'Number');
+                // Color set to 290.
+                this.setColour(290);
+                // Tooltip explains that it returns the mean of array elements.
+                this.setTooltip('Mean of array elements');
+            }
+        };
+
+        // NumPy Reshape Block: Reshapes an array to a desired new shape.
+        Blockly.Blocks['numpy_reshape'] = {
+            init: function() {
+                // Append a label to indicate the reshape operation.
+                this.appendDummyInput()
+                    .appendField('reshape(');
+                // Input field for the array to be reshaped.
+                this.appendValueInput('ARRAY')
+                    .setCheck('Array');
+                // Append a label indicating the new shape is to be defined.
+                this.appendDummyInput()
+                    .appendField('to');
+                // Input field for the new shape.
+                this.appendValueInput('SHAPE')
+                    .setCheck('Array');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Declare output as an Array.
+                this.setOutput(true, 'Array');
+                // Color set to match NumPy theming.
+                this.setColour(290);
+                // Tooltip provides explanation for the reshape block.
+                this.setTooltip('Reshape array');
+            }
+        };
+
+        // ----------------------- Matplotlib Blocks -----------------------
+        // Matplotlib Plot Block: Provides a block to create a line plot using matplotlib.
+        Blockly.Blocks['matplotlib_plot'] = {
+            init: function() {
+                // Append a label indicating the use of plt.plot.
+                this.appendDummyInput()
+                    .appendField('plt.plot(');
+                // Input for the X-axis data.
+                this.appendValueInput('X')
+                    .setCheck('Array');
+                // Comma separator between X and Y data.
+                this.appendDummyInput()
+                    .appendField(',');
+                // Input for the Y-axis data.
+                this.appendValueInput('Y')
+                    .setCheck('Array');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Set the block type to a statement (chained statement, not returning a value).
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                // Set block color to 320, grouping it with other Matplotlib blocks.
+                this.setColour(320);
+                // Tooltip explains that it creates a line plot.
+                this.setTooltip('Create line plot');
+            }
+        };
+
+        // Matplotlib Scatter Block: Provides a block to create a scatter plot.
+        Blockly.Blocks['matplotlib_scatter'] = {
+            init: function() {
+                // Append a label indicating the scatter plot function.
+                this.appendDummyInput()
+                    .appendField('plt.scatter(');
+                // Input for X-axis data.
+                this.appendValueInput('X')
+                    .setCheck('Array');
+                // Comma separator.
+                this.appendDummyInput()
+                    .appendField(',');
+                // Input for Y-axis data.
+                this.appendValueInput('Y')
+                    .setCheck('Array');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Declare block as a statement block.
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                // Set color to group with other Matplotlib blocks.
+                this.setColour(320);
+                // Tooltip explains that the block creates a scatter plot.
+                this.setTooltip('Create scatter plot');
+            }
+        };
+
+        // Matplotlib Title Block: Provides a block to set the title of a matplotlib plot.
+        Blockly.Blocks['matplotlib_title'] = {
+            init: function() {
+                // Append a label for setting the plot title.
+                this.appendDummyInput()
+                    .appendField('plt.title(');
+                // Accepts a string input for the title text.
+                this.appendValueInput('TITLE')
+                    .setCheck('String');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Set block as a statement block so it can be part of a sequence of commands.
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                // Set color to 320 to match Matplotlib category.
+                this.setColour(320);
+                // Tooltip instructs that the block sets the plot title.
+                this.setTooltip('Set plot title');
+            }
+        };
+
+        // Matplotlib Labels Block: Provides a block to set labels for both the x and y axes.
+        Blockly.Blocks['matplotlib_labels'] = {
+            init: function() {
+                // Append a label for the x-axis label.
+                this.appendDummyInput()
+                    .appendField('plt.xlabel(');
+                // Input field for the x-axis label string.
+                this.appendValueInput('XLABEL')
+                    .setCheck('String');
+                // Append a closing parenthesis after the x-axis label.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Append a label for the y-axis label.
+                this.appendDummyInput()
+                    .appendField('plt.ylabel(');
+                // Input field for the y-axis label string.
+                this.appendValueInput('YLABEL')
+                    .setCheck('String');
+                // Append a closing parenthesis.
+                this.appendDummyInput()
+                    .appendField(')');
+                // Configure block as a statement block.
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                // Set the color to 320 for Matplotlib consistency.
+                this.setColour(320);
+                // Tooltip explains that this block sets both x and y axis labels.
+                this.setTooltip('Set axis labels');
+            }
+        };
+
+        // Matplotlib Show Block: Provides a block to call plt.show() for displaying the plot.
+        Blockly.Blocks['matplotlib_show'] = {
+            init: function() {
+                // Append a label indicating the use of plt.show() with no inputs.
+                this.appendDummyInput()
+                    .appendField('plt.show()');
+                // Declare block as a statement.
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                // Set block color to 320.
+                this.setColour(320);
+                // Tooltip indicates that this block will display the plot.
+                this.setTooltip('Display the plot');
+            }
+        };
+
+        // ----------------------- Python Generators for NumPy Blocks -----------------------
+        // Python Generator for NumPy Array Block: Converts the numpy_array block into Python code.
+        Blockly.Python['numpy_array'] = function(block) {
+            const values = Blockly.Python.valueToCode(block, 'VALUES', Blockly.Python.ORDER_ATOMIC);
+            return [`np.array(${values})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // Python Generator for NumPy Zeros Block: Generates Python code to create an array of zeros.
+        Blockly.Python['numpy_zeros'] = function(block) {
+            const shape = Blockly.Python.valueToCode(block, 'SHAPE', Blockly.Python.ORDER_ATOMIC);
+            return [`np.zeros((${shape},))`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // Python Generator for NumPy Ones Block: Generates code for an array of ones.
+        Blockly.Python['numpy_ones'] = function(block) {
+            const shape = Blockly.Python.valueToCode(block, 'SHAPE', Blockly.Python.ORDER_ATOMIC);
+            return [`np.ones((${shape},))`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // Python Generator for NumPy Random Block: Generates code to create a random array.
+        Blockly.Python['numpy_random'] = function(block) {
+            const size = Blockly.Python.valueToCode(block, 'SIZE', Blockly.Python.ORDER_ATOMIC);
+            return [`np.random.rand(${size})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // Python Generator for NumPy Sum Block: Converts the numpy_sum block into code that computes the sum.
+        Blockly.Python['numpy_sum'] = function(block) {
+            const arr = Blockly.Python.valueToCode(block, 'ARRAY', Blockly.Python.ORDER_ATOMIC);
+            return [`np.sum(${arr})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // Python Generator for NumPy Mean Block: Generates code to compute the mean of an array.
+        Blockly.Python['numpy_mean'] = function(block) {
+            const arr = Blockly.Python.valueToCode(block, 'ARRAY', Blockly.Python.ORDER_ATOMIC);
+            return [`np.mean(${arr})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // Python Generator for NumPy Reshape Block: Transforms the reshape block into valid Python code.
+        Blockly.Python['numpy_reshape'] = function(block) {
+            const arr = Blockly.Python.valueToCode(block, 'ARRAY', Blockly.Python.ORDER_ATOMIC);
+            const shape = Blockly.Python.valueToCode(block, 'SHAPE', Blockly.Python.ORDER_ATOMIC);
+            return [`${arr}.reshape(${shape})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+
+        // ----------------------- Python Generators for Matplotlib Blocks -----------------------
+        // Python Generator for Matplotlib Plot Block: Converts the block into code for creating a line plot.
+        Blockly.Python['matplotlib_plot'] = function(block) {
+            const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_ATOMIC);
+            const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_ATOMIC);
+            return `plt.plot(${x}, ${y})\n`;
+        };
+
+        // Python Generator for Matplotlib Scatter Block: Generates code for creating a scatter plot.
+        Blockly.Python['matplotlib_scatter'] = function(block) {
+            const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_ATOMIC);
+            const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_ATOMIC);
+            return `plt.scatter(${x}, ${y})\n`;
+        };
+
+        // Python Generator for Matplotlib Title Block: Converts the title block into code that sets the plot title.
+        Blockly.Python['matplotlib_title'] = function(block) {
+            const title = Blockly.Python.valueToCode(block, 'TITLE', Blockly.Python.ORDER_ATOMIC);
+            return `plt.title(${title})\n`;
+        };
+
+        // Python Generator for Matplotlib Labels Block: Generates code to set the x and y axis labels.
+        Blockly.Python['matplotlib_labels'] = function(block) {
+            const xlabel = Blockly.Python.valueToCode(block, 'XLABEL', Blockly.Python.ORDER_ATOMIC);
+            const ylabel = Blockly.Python.valueToCode(block, 'YLABEL', Blockly.Python.ORDER_ATOMIC);
+            return `plt.xlabel(${xlabel})\nplt.ylabel(${ylabel})\n`;
+        };
+
+        // Python Generator for Matplotlib Show Block: Converts the block into code to display the plot.
+        Blockly.Python['matplotlib_show'] = function(block) {
+            return 'plt.show()\n';
+        };
+    </script>
+</head>
+<body>
+    <!-- 
+  This section defines the header navigation bar.
+  It uses Bootstrap classes for layout (navbar, container-fluid) and responsive design.
+  Font Awesome is used for iconography (e.g., <i class="fas fa-code"></i> for the logo icon).
+-->
+<header>
+    <!-- 
+      The navigation bar element is styled using Bootstrap's navbar classes.
+      "navbar-expand-lg" makes the navbar responsive, and "navbar-light" sets a light color scheme.
+    -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <!-- 
+          This div contains the navbar items and uses Bootstrap's container-fluid class for a full-width container.
+          "justify-content-start" is used to align the child elements to the left.
+        -->
+        <div class="container-fluid justify-content-start">
+            <!-- 
+              This anchor tag acts as the website's logo or home link.
+              It includes a Font Awesome icon (<i class="fas fa-code"></i>) followed by the text "Python Blocks".
+              The href attribute points to 'home_page.html', making it a clickable link to the home page.
+            -->
+            <a class="navbar-brand me-2" href="home_page.html">
+                <i class="fas fa-code"></i> Python Blocks
+            </a>
+            <!-- 
+              This div creates a dropdown menu for file-related actions.
+              The "nav-item dropdown" class indicates that it's a dropdown item within the navigation bar.
+            -->
+            <div class="nav-item dropdown">
+                <!-- 
+                  This button toggles the dropdown menu.
+                  It uses Bootstrap's 'btn', 'btn-outline-primary', and 'dropdown-toggle' classes.
+                  The 'data-bs-toggle="dropdown"' attribute enables Bootstrap's dropdown functionality.
+                -->
+                <button class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-file"></i> File
+                </button>
+                <!-- 
+                  This unordered list element contains the dropdown items.
+                  The class "dropdown-menu" is used by Bootstrap to style the menu.
+                -->
+                <ul class="dropdown-menu">
+                    <!-- 
+                      Each list item (<li>) contains an actionable link (<a>) styled as a dropdown item.
+                      The first menu item invokes the "saveWorkspace()" function when clicked, allowing users to save their workspace.
+                      An icon (<i class="fas fa-save"></i>) visually represents the action.
+                    -->
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="saveWorkspace()">
+                            <i class="fas fa-save"></i> Save
+                        </a>
+                    </li>
+                    <!-- 
+                      The second dropdown item is for loading a workspace.
+                      It calls the "loadWorkspace()" function and includes a folder icon (<i class="fas fa-folder-open"></i>).
+                    -->
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="loadWorkspace()">
+                            <i class="fas fa-folder-open"></i> Load
+                        </a>
+                    </li>
+                    <!-- 
+                      The third dropdown item exports the user's work as Python code.
+                      The <i class="fas fa-file-export"></i> icon visually indicates the export function.
+                    -->
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportPython()">
+                            <i class="fas fa-file-export"></i> Export Python
+                        </a>
+                    </li>
+                    <!-- 
+                      The fourth dropdown item clears the current workspace.
+                      The associated icon (<i class="fas fa-trash"></i>) suggests a removal or deletion action.
+                    -->
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="clearWorkspace()">
+                            <i class="fas fa-trash"></i> Clear Workspace
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+    <!--
+        Main structural layout for the playground interface
+        - Uses a split container design for workspace and console
+        - Left side contains Blockly workspace and control buttons
+        - Right side contains output console
+    -->
+    <!-- Split container: Left pane (workspace) and Right pane (console) --><!-- 
+        Split container (#split-container)
+        - Flexbox container that divides screen into two panes
+        - Connected to CSS for flexible resizing and layout
+        - Parent container for workspace and console sections
+    -->
+  <div id="split-container">
+    <!-- Left pane: Blockly workspace --><!--
+        Left pane (#left-pane) 
+        - Contains Blockly workspace and control buttons
+        - Takes up left portion of split container
+        - Connected to CSS for width control and styling
+    -->
+    <div id="left-pane"> <!--
+        Blockly workspace (#blocklyDiv)
+        - Main area where blocks can be dragged and assembled
+        - Initialized by Blockly library
+        - Connected to CSS for sizing and workspace styling
+    -->
+      <div id="blocklyDiv"></div>
+      <!-- Controls (Run and Toggle Console) -->
+        <!--
+        Controls container (.controls)
+        - Houses action buttons for playground functionality
+        - Positioned below Blockly workspace
+        - Uses Bootstrap classes for button styling
+        - Contains:
+            1. Run button - Executes the block code (connected to runCode() function)
+            2. Toggle Console button - Shows/hides output panel (connected to toggleOutput() function)
+        - Buttons include Font Awesome icons for visual indicators
+    -->
+      <div class="controls">
+        <button onclick="runCode()" class="btn btn-success" id="runButton">
+          <i class="fas fa-play"></i> Run
+        </button>
+        <button onclick="toggleOutput()" class="btn btn-info" id="outputToggle">
+          <i class="fas fa-terminal"></i> Toggle Console
+        </button>
+      </div>
+    </div>
+    <!-- Right pane: Console -->
+    <!--
+        Right pane (#right-pane)
+        - Contains console output area
+        - Can be toggled using the Toggle Console button
+        - Connected to CSS for width control and visibility
+    -->
+    <div id="right-pane">
+    <!--
+        Output container (#output)
+        - Displays program execution results
+        - Updated dynamically when code runs
+        - Connected to CSS for styling console output
+    -->
+      <div id="output"></div>
+    </div>
+  </div>
+     <!-- 
+        Purpose: This XML block defines the toolbox for the Blockly editor. 
+        It specifies the categories and blocks available to the user for creating visual programs.
+        Why used: To provide a user-friendly interface for building code logic through drag-and-drop blocks.
+     -->
+     <xml id="toolbox" style="display: none">
+        <!-- 
+            Category: Logic
+            Purpose: Contains blocks for logical operations and conditional statements.
+            Colour: %{BKY_LOGIC_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+            <!-- 
+                Block: controls_if
+                Purpose: Implements an "if" condition.
+                Functionality: Allows users to execute different code branches based on a condition.
+             -->
+            <block type="controls_if"></block>
+            <!-- 
+                Block: logic_compare
+                Purpose: Compares two values.
+                Functionality: Returns true or false based on the comparison operator selected (e.g., equals, not equals, less than).
+             -->
+            <block type="logic_compare"></block>
+            <!-- 
+                Block: logic_operation
+                Purpose: Performs logical operations (AND, OR).
+                Functionality: Combines two boolean values to produce a single boolean result.
+             -->
+            <block type="logic_operation"></block>
+            <!-- 
+                Block: logic_negate
+                Purpose: Negates a boolean value.
+                Functionality: Inverts the boolean value (true becomes false, and vice versa).
+             -->
+            <block type="logic_negate"></block>
+            <!-- 
+                Block: logic_boolean
+                Purpose: Represents boolean values (true or false).
+                Functionality: Provides a way to input boolean values directly into the program.
+             -->
+            <block type="logic_boolean"></block>
+        </category>
+
+        <!-- 
+            Category: Loops
+            Purpose: Contains blocks for creating loops that repeat a set of instructions.
+            Colour: %{BKY_LOOPS_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+            <!-- 
+                Block: controls_repeat_ext
+                Purpose: Repeats a block of code a specified number of times.
+                Functionality: Allows users to define the number of repetitions dynamically.
+             -->
+            <block type="controls_repeat_ext"></block>
+            <!-- 
+                Block: controls_whileUntil
+                Purpose: Repeats a block of code while or until a condition is true.
+                Functionality: Executes the loop body as long as the specified condition remains true (or until it becomes true).
+             -->
+            <block type="controls_whileUntil"></block>
+            <!-- 
+                Block: controls_for
+                Purpose: Executes a block of code for a specific range of values.
+                Functionality: Iterates through a sequence of numbers, executing the loop body for each number.
+             -->
+            <block type="controls_for">
+                <!-- 
+                    Value: FROM
+                    Purpose: Specifies the starting value for the loop counter.
+                    Functionality: Sets the initial value of the loop variable.
+                 -->
+                <value name="FROM">
+                    <!-- 
+                        Shadow Block: math_number
+                        Purpose: Provides a default numerical value for the "FROM" input.
+                        Functionality: Ensures that a number is always provided, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="math_number">
+                        <!-- 
+                            Field: NUM
+                            Purpose: Sets the default value of the number.
+                            Functionality: Displays the initial number in the input field.
+                         -->
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+                <!-- 
+                    Value: TO
+                    Purpose: Specifies the ending value for the loop counter.
+                    Functionality: Determines when the loop will terminate.
+                 -->
+                <value name="TO">
+                    <!-- 
+                        Shadow Block: math_number
+                        Purpose: Provides a default numerical value for the "TO" input.
+                        Functionality: Ensures that a number is always provided, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="math_number">
+                        <!-- 
+                            Field: NUM
+                            Purpose: Sets the default value of the number.
+                            Functionality: Displays the initial number in the input field.
+                         -->
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+                <!-- 
+                    Value: BY
+                    Purpose: Specifies the increment value for the loop counter.
+                    Functionality: Determines how much the loop variable increases after each iteration.
+                 -->
+                <value name="BY">
+                    <!-- 
+                        Shadow Block: math_number
+                        Purpose: Provides a default numerical value for the "BY" input.
+                        Functionality: Ensures that a number is always provided, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="math_number">
+                        <!-- 
+                            Field: NUM
+                            Purpose: Sets the default value of the number.
+                            Functionality: Displays the initial number in the input field.
+                         -->
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+            </block>
+            <!-- 
+                Block: controls_forEach
+                Purpose: Iterates over each item in a list.
+                Functionality: Executes a block of code for each element in the list.
+             -->
+            <block type="controls_forEach"></block>
+            <!-- 
+                Block: controls_flow_statements
+                Purpose: Controls the flow of execution within a loop (break, continue).
+                Functionality: Allows users to exit a loop prematurely or skip to the next iteration.
+             -->
+            <block type="controls_flow_statements"></block>
+        </category>
+
+        <!-- 
+            Category: Math
+            Purpose: Contains blocks for performing mathematical operations.
+            Colour: %{BKY_MATH_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Math" colour="%{BKY_MATH_HUE}">
+            <!-- 
+                Block: math_number
+                Purpose: Represents a numerical value.
+                Functionality: Allows users to input numbers directly into the program.
+             -->
+            <block type="math_number">
+                <!-- 
+                    Field: NUM
+                    Purpose: Sets the default value of the number.
+                    Functionality: Displays the initial number in the input field.
+                 -->
+                <field name="NUM">123</field>
+            </block>
+            <!-- 
+                Block: math_arithmetic
+                Purpose: Performs basic arithmetic operations (+, -, *, /, ^).
+                Functionality: Allows users to perform calculations with two numerical inputs.
+             -->
+            <block type="math_arithmetic"></block>
+            <!-- 
+                Block: math_single
+                Purpose: Performs single-argument mathematical functions (e.g., square root, absolute value, negation).
+                Functionality: Applies a mathematical function to a single numerical input.
+             -->
+            <block type="math_single"></block>
+            <!-- 
+                Block: math_round
+                Purpose: Rounds a number to the nearest integer.
+                Functionality: Converts a floating-point number to its closest whole number.
+             -->
+            <block type="math_round"></block>
+            <!-- 
+                Block: math_modulo
+                Purpose: Calculates the remainder of a division.
+                Functionality: Returns the remainder when one number is divided by another.
+             -->
+            <block type="math_modulo"></block>
+            <!-- 
+                Block: math_constrain
+                Purpose: Constrains a number to be within a specified range.
+                Functionality: Limits a number to a minimum and maximum value.
+             -->
+            <block type="math_constrain"></block>
+            <!-- 
+                Block: math_random_int
+                Purpose: Generates a random integer within a specified range.
+                Functionality: Produces a random whole number between two given limits.
+             -->
+            <block type="math_random_int"></block>
+            <!-- 
+                Block: math_random_float
+                Purpose: Generates a random floating-point number between 0 and 1.
+                Functionality: Produces a random decimal number greater than or equal to 0 and less than 1.
+             -->
+            <block type="math_random_float"></block>
+        </category>
+
+        <!-- 
+            Category: Text
+            Purpose: Contains blocks for manipulating text strings.
+            Colour: %{BKY_TEXTS_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Text" colour="%{BKY_TEXTS_HUE}">
+            <!-- 
+                Block: text
+                Purpose: Represents a text string.
+                Functionality: Allows users to input text directly into the program.
+             -->
+            <block type="text"></block>
+            <!-- 
+                Block: text_print
+                Purpose: Prints text to the console or output.
+                Functionality: Displays text to the user.
+             -->
+            <block type="text_print"></block>
+            <!-- 
+                Block: text_join
+                Purpose: Concatenates multiple text strings together.
+                Functionality: Combines two or more text strings into a single string.
+             -->
+            <block type="text_join"></block>
+            <!-- 
+                Block: text_append
+                Purpose: Appends text to an existing variable.
+                Functionality: Adds text to the end of a string variable.
+             -->
+            <block type="text_append"></block>
+            <!-- 
+                Block: text_length
+                Purpose: Returns the length of a text string.
+                Functionality: Counts the number of characters in a string.
+             -->
+            <block type="text_length"></block>
+            <!-- 
+                Block: text_isEmpty
+                Purpose: Checks if a text string is empty.
+                Functionality: Returns true if the string has no characters, false otherwise.
+             -->
+            <block type="text_isEmpty"></block>
+            <!-- 
+                Block: text_indexOf
+                Purpose: Finds the index of a substring within a text string.
+                Functionality: Returns the position of the first or last occurrence of a substring.
+             -->
+            <block type="text_indexOf"></block>
+            <!-- 
+                Block: text_charAt
+                Purpose: Returns the character at a specific index in a text string.
+                Functionality: Extracts a single character from a string based on its position.
+             -->
+            <block type="text_charAt"></block>
+            <!-- 
+                Block: text_getSubstring
+                Purpose: Extracts a substring from a text string.
+                Functionality: Returns a portion of a string between two specified indices.
+             -->
+            <block type="text_getSubstring"></block>
+            <!-- 
+                Block: text_changeCase
+                Purpose: Changes the case of a text string (uppercase, lowercase, title case).
+                Functionality: Converts the string to a different case format.
+             -->
+            <block type="text_changeCase"></block>
+            <!-- 
+                Block: text_trim
+                Purpose: Removes whitespace from the beginning and end of a text string.
+                Functionality: Cleans up a string by removing leading and trailing spaces.
+             -->
+            <block type="text_trim"></block>
+        </category>
+
+        <!-- 
+            Category: Lists
+            Purpose: Contains blocks for creating and manipulating lists (arrays).
+            Colour: %{BKY_LISTS_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Lists" colour="%{BKY_LISTS_HUE}">
+            <!-- 
+                Block: lists_create_empty
+                Purpose: Creates an empty list.
+                Functionality: Initializes a list with no elements.
+             -->
+            <block type="lists_create_empty"></block>
+            <!-- 
+                Block: lists_create_with
+                Purpose: Creates a list with a specified number of items.
+                Functionality: Initializes a list with a given set of elements.
+             -->
+            <block type="lists_create_with"></block>
+            <!-- 
+                Block: lists_repeat
+                Purpose: Creates a list with a single item repeated multiple times.
+                Functionality: Initializes a list where all elements have the same value.
+             -->
+            <block type="lists_repeat"></block>
+            <!-- 
+                Block: lists_length
+                Purpose: Returns the length of a list.
+                Functionality: Counts the number of elements in a list.
+             -->
+            <block type="lists_length"></block>
+            <!-- 
+                Block: lists_isEmpty
+                Purpose: Checks if a list is empty.
+                Functionality: Returns true if the list has no elements, false otherwise.
+             -->
+            <block type="lists_isEmpty"></block>
+            <!-- 
+                Block: lists_indexOf
+                Purpose: Finds the index of an item in a list.
+                Functionality: Returns the position of the first or last occurrence of an element.
+             -->
+            <block type="lists_indexOf"></block>
+            <!-- 
+                Block: lists_getIndex
+                Purpose: Retrieves an item from a list at a specific index.
+                Functionality: Accesses an element in a list based on its position.
+             -->
+            <block type="lists_getIndex"></block>
+            <!-- 
+                Block: lists_setIndex
+                Purpose: Sets the value of an item in a list at a specific index.
+                Functionality: Modifies an element in a list based on its position.
+             -->
+            <block type="lists_setIndex"></block>
+            <!-- 
+                Block: lists_getSublist
+                Purpose: Extracts a sublist from a list.
+                Functionality: Returns a portion of a list between two specified indices.
+             -->
+            <block type="lists_getSublist"></block>
+            <!-- 
+                Block: lists_sort
+                Purpose: Sorts the elements of a list.
+                Functionality: Arranges the elements in ascending or descending order.
+             -->
+            <block type="lists_sort"></block>
+        </category>
+
+        <!-- 
+            Category: Variables
+            Purpose: Allows users to create and manage variables.
+            Custom: VARIABLE - Indicates that this category is dynamically populated with variable blocks.
+            Colour: %{BKY_VARIABLES_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}">
+        </category>
+
+        <!-- 
+            Category: Functions
+            Purpose: Allows users to define and call functions (procedures).
+            Custom: PROCEDURE - Indicates that this category is dynamically populated with function blocks.
+            Colour: %{BKY_PROCEDURES_HUE} - This is a dynamic colour reference defined by Blockly.
+         -->
+        <category name="Functions" custom="PROCEDURE" colour="%{BKY_PROCEDURES_HUE}">
+        </category>
+
+        <!-- 
+            Category: Python
+            Purpose: Contains blocks specific to Python programming.
+            Colour: 160 - A specific colour value for this category.
+         -->
+        <category name="Python" colour="160">
+            <!-- 
+                Block: text_print
+                Purpose: Prints text to the console (Python equivalent of print()).
+                Functionality: Displays text to the user in a Python environment.
+             -->
+            <block type="text_print">
+                <!-- 
+                    Value: TEXT
+                    Purpose: Specifies the text to be printed.
+                    Functionality: Provides the input for the print() function.
+                 -->
+                <value name="TEXT">
+                    <!-- 
+                        Shadow Block: text
+                        Purpose: Provides a default text value for the "TEXT" input.
+                        Functionality: Ensures that some text is always provided, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="text">
+                        <!-- 
+                            Field: TEXT
+                            Purpose: Sets the default text value.
+                            Functionality: Displays the initial text in the input field.
+                         -->
+                        <field name="TEXT">Hello World</field>
+                    </shadow>
+                </value>
+            </block>
+            <!-- 
+                Block: text_input
+                Purpose: Prompts the user for text input (Python equivalent of input()).
+                Functionality: Allows the user to enter text from the keyboard.
+             -->
+            <block type="text_input">
+                <!-- 
+                    Value: TEXT
+                    Purpose: Specifies the prompt message to display to the user.
+                    Functionality: Informs the user what kind of input is expected.
+                 -->
+                <value name="TEXT">
+                    <!-- 
+                        Shadow Block: text
+                        Purpose: Provides a default prompt message for the "TEXT" input.
+                        Functionality: Ensures that a prompt is always displayed, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="text">
+                        <!-- 
+                            Field: TEXT
+                            Purpose: Sets the default prompt message.
+                            Functionality: Displays the initial prompt in the input field.
+                         -->
+                        <field name="TEXT">Enter something:</field>
+                    </shadow>
+                </value>
+            </block>
+            <!-- 
+                Block: lists_split
+                Purpose: Splits a text string into a list based on a delimiter (Python equivalent of string.split()).
+                Functionality: Divides a string into smaller parts based on a separator character.
+             -->
+            <block type="lists_split">
+                <!-- 
+                    Value: DELIM
+                    Purpose: Specifies the delimiter to use for splitting the string.
+                    Functionality: Determines the character that separates the string into parts.
+                 -->
+                <value name="DELIM">
+                    <!-- 
+                        Shadow Block: text
+                        Purpose: Provides a default delimiter value for the "DELIM" input.
+                        Functionality: Ensures that a delimiter is always provided, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="text">
+                        <!-- 
+                            Field: TEXT
+                            Purpose: Sets the default delimiter value.
+                            Functionality: Displays the initial delimiter in the input field.
+                         -->
+                        <field name="TEXT">,</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+
+        <!-- 
+            Category: Advanced
+            Purpose: Contains blocks for more advanced programming concepts.
+            Colour: 200 - A specific colour value for this category.
+         -->
+        <category name="Advanced" colour="200">
+            <!-- 
+                Block: text_prompt_ext
+                Purpose: Prompts the user for text input with a custom message.
+                Functionality: Allows for a more flexible text input prompt.
+             -->
+            <block type="text_prompt_ext">
+                <!-- 
+                    Value: TEXT
+                    Purpose: Specifies the prompt message to display to the user.
+                    Functionality: Informs the user what kind of input is expected.
+                 -->
+                <value name="TEXT">
+                    <!-- 
+                        Shadow Block: text
+                        Purpose: Provides a default prompt message for the "TEXT" input.
+                        Functionality: Ensures that a prompt is always displayed, even if the user doesn't explicitly enter one.
+                     -->
+                    <shadow type="text">
+                        <!-- 
+                            Field: TEXT
+                            Purpose: Sets the default prompt message.
+                            Functionality: Displays the initial prompt in the input field.
+                         -->
+                        <field name="TEXT">Please enter value</field>
+                    </shadow>
+                </value>
+            </block>
+            <!-- 
+                Block: math_on_list
+                Purpose: Performs mathematical operations on a list of numbers (e.g., sum, average, min, max).
+                Functionality: Applies a mathematical function to all elements in a list.
+             -->
+            <block type="math_on_list"></block>
+            <!-- 
+                Block: lists_split
+                Purpose: Splits a text string into a list based on a delimiter.
+                Functionality: Divides a string into smaller parts based on a separator character.
+             -->
+            <block type="lists_split"></block>
+        </category>
+        <!-- 
+            Category: Custom Blocks
+            Purpose: Contains custom-defined blocks for specific functionalities.
+            Colour: 120 - A specific colour value for this category.
+         -->
+        <category name="Custom Blocks" colour="120">
+            <!-- 
+                Block: controls_warning
+                Purpose: Displays a warning message.
+                Functionality: Provides a visual warning to the user.
+             -->
+            <block type="controls_warning">
+                <!-- 
+                    Value: MESSAGE
+                    Purpose: Specifies the warning message to be displayed.
+                    Functionality: Sets the text of the warning.
+                 -->
+                <value name="MESSAGE">
+                    <!-- 
+                        Shadow Block: text
+                        Purpose: Provides a default warning message.
+                        Functionality: Ensures a message is always displayed.
+                     -->
+                    <shadow type="text">
+                        <!-- 
+                            Field: TEXT
+                            Purpose: Sets the default warning message text.
+                            Functionality: Displays the initial warning message.
+                         -->
+                        <field name="TEXT">Caution: check your logic!</field>
+                    </shadow>
+                </value>
+            </block>
+            <!-- 
+                Block: timer_setTimeout
+                Purpose: Sets a timer to execute a function after a specified delay.
+                Functionality: Introduces a delay before a block of code is executed.
+             -->
+            <block type="timer_setTimeout">
+                <!-- 
+                    Value: DELAY
+                    Purpose: Specifies the delay in milliseconds.
+                    Functionality: Determines how long the timer waits before executing the function.
+                 -->
+                <value name="DELAY">
+                    <!-- 
+                        Shadow Block: math_number
+                        Purpose: Provides a default delay value.
+                        Functionality: Ensures a numerical value is always provided.
+                     -->
+                    <shadow type="math_number">
+                        <!-- 
+                            Field: NUM
+                            Purpose: Sets the default delay value in milliseconds.
+                            Functionality: Displays the initial delay value.
+                         -->
+                        <field name="NUM">1000</field>
+                    </shadow>
+                </value>
+            </block>
+            <!-- 
+                Block: debug_consoleLog
+                Purpose: Logs a message to the console for debugging purposes.
+                Functionality: Allows developers to inspect variables and program state.
+             -->
+            <block type="debug_consoleLog">
+                <!-- 
+                    Value: LOG
+                    Purpose: Specifies the message to be logged to the console.
+                    Functionality: Sets the text that will be displayed in the console.
+                 -->
+                <value name="LOG">
+                    <!-- 
+                        Shadow Block: text
+                        Purpose: Provides a default log message.
+                        Functionality: Ensures a message is always logged.
+                     -->
+                    <shadow type="text">
+                        <!-- 
+                            Field: TEXT
+                            Purpose: Sets the default log message text.
+                            Functionality: Displays the initial log message.
+                         -->
+                        <field name="TEXT">Debug info</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+        <!-- 
+            Category: NumPy
+            Purpose: Contains blocks for performing numerical operations using the NumPy library.
+            Colour: 290 - A specific colour value for this category.
+         -->
+        <category name="NumPy" colour="290">
+            <!-- 
+                Block: numpy_array
+                Purpose: Creates a NumPy array.
+                Functionality: Allows users to define and initialize NumPy arrays.
+             -->
+            <block type="numpy_array"></block>
+            <!-- 
+                Block: numpy_zeros
+                Purpose: Creates a NumPy array filled with zeros.
+                Functionality: Initializes an array with all elements set to 0.
+             -->
+            <block type="numpy_zeros"></block>
+            <!-- 
+                Block: numpy_ones
+                Purpose: Creates a NumPy array filled with ones.
+                Functionality: Initializes an array with all elements set to 1.
+             -->
+            <block type="numpy_ones"></block>
+            <!-- 
+                Block: numpy_random
+                Purpose: Creates a NumPy array with random values.
+                Functionality: Initializes an array with randomly generated numbers.
+             -->
+            <block type="numpy_random"></block>
+            <!-- 
+                Block: numpy_sum
+                Purpose: Calculates the sum of the elements in a NumPy array.
+                Functionality: Adds up all the values in the array.
+             -->
+            <block type="numpy_sum"></block>
+            <!-- 
+                Block: numpy_mean
+                Purpose: Calculates the mean (average) of the elements in a NumPy array.
+                Functionality: Computes the average value of the array elements.
+             -->
+            <block type="numpy_mean"></block>
+            <!-- 
+                Block: numpy_reshape
+                Purpose: Reshapes a NumPy array.
+                Functionality: Changes the dimensions of the array without changing its data.
+             -->
+            <block type="numpy_reshape"></block>
+        </category>
+        
+        <!-- 
+            Category: Matplotlib
+            Purpose: Contains blocks for creating plots and visualizations using the Matplotlib library.
+            Colour: 320 - A specific colour value for this category.
+         -->
+        <category name="Matplotlib" colour="320">
+            <!-- 
+                Block: matplotlib_plot
+                Purpose: Creates a line plot using Matplotlib.
+                Functionality: Generates a line graph from data.
+             -->
+            <block type="matplotlib_plot"></block>
+            <!-- 
+                Block: matplotlib_scatter
+                Purpose: Creates a scatter plot using Matplotlib.
+                Functionality: Generates a scatter graph from data.
+             -->
+            <block type="matplotlib_scatter"></block>
+            <!-- 
+                Block: matplotlib_title
+                Purpose: Sets the title of a Matplotlib plot.
+                Functionality: Adds a title to the graph.
+             -->
+            <block type="matplotlib_title"></block>
+            <!-- 
+                Block: matplotlib_labels
+                Purpose: Sets the labels for the axes of a Matplotlib plot.
+                Functionality: Adds labels to the x and y axes of the graph.
+             -->
+            <block type="matplotlib_labels"></block>
+            <!-- 
+                Block: matplotlib_show
+                Purpose: Displays the Matplotlib plot.
+                Functionality: Shows the generated graph to the user.
+             -->
+            <block type="matplotlib_show"></block>
+        </category>
+    </xml>
+
+    <!-- Dependencies -->
+    <!-- Purpose: Includes Bootstrap's JavaScript bundle for interactive components. -->
+    <!-- Why used: Provides pre-built components like modals, dropdowns, and tooltips. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- NumPy Blocks -->
+    <script>
+        // Initialize Split.js for a VS Code–like split view
+        // Purpose: Initializes the Split.js library to create a split-panel layout.
+        // Why used: Allows users to resize the workspace and console panels.
+        Split(['#left-pane', '#right-pane'], {
+            sizes: [70, 30],  // You can adjust the default sizes
+            minSize: 200,     // Minimum size for each pane in pixels
+            gutterSize: 8,    // Size of the draggable divider (gutter)
+            cursor: 'col-resize'
+        });
+        
+        // Sample toggle function for the console pane
+        // Purpose: Toggles the visibility of the output console.
+        // Why used: Allows users to hide or show the console as needed.
+        function toggleOutput() {
+            const rightPane = document.getElementById('right-pane');
+            if (rightPane.style.display === 'none') {
+                rightPane.style.display = 'block';
+            } else {
+                rightPane.style.display = 'none';
+            }
+            // Optionally, trigger a Blockly resize if needed:
+            if (window.Blockly && window.workspace) {
+                setTimeout(() => {
+                Blockly.svgResize(window.workspace);
+                }, 0);
+            }
+        }
+        
+        // Example runCode (your existing function logic)
+        // Purpose: Executes the code generated by Blockly.
+        // Why used: Triggers the execution of the visual program.
+        function runCode() {
+        // Sample: show output, disable button, call backend, etc.
+            const output = document.getElementById('output');
+            output.innerHTML = '<div class="info-line">Running code...</div>';
+        // Your code execution logic goes here...
+        }
+
+        // Initialize Blockly workspace after DOM is loaded (if not already done)
+        // Purpose: Initializes the Blockly workspace.
+        // Why used: Creates the interactive coding environment.
+        document.addEventListener('DOMContentLoaded', () => {
+            window.workspace = Blockly.inject('blocklyDiv', {
+                toolbox: document.getElementById('toolbox')
+            });
+        });
+        // Array Creation
+        // Purpose: Defines a Blockly block for creating NumPy arrays.
+        // Why used: Provides a visual interface for creating arrays.
+        Blockly.Blocks['numpy_array'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('np.array(');
+            this.appendValueInput('VALUES')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Array');
+            this.setColour(290);
+            this.setTooltip('Create a NumPy array from list');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for creating NumPy arrays filled with zeros.
+        // Why used: Provides a visual interface for creating arrays of zeros.
+        Blockly.Blocks['numpy_zeros'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('np.zeros(');
+            this.appendValueInput('SHAPE')
+                .setCheck('Number');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Array');
+            this.setColour(290);
+            this.setTooltip('Create array of zeros');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for creating NumPy arrays filled with ones.
+        // Why used: Provides a visual interface for creating arrays of ones.
+        Blockly.Blocks['numpy_ones'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('np.ones(');
+            this.appendValueInput('SHAPE')
+                .setCheck('Number');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Array');
+            this.setColour(290);
+            this.setTooltip('Create array of ones');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for creating NumPy arrays with random values.
+        // Why used: Provides a visual interface for creating random arrays.
+        Blockly.Blocks['numpy_random'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('np.random.rand(');
+            this.appendValueInput('SIZE')
+                .setCheck('Number');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Array');
+            this.setColour(290);
+            this.setTooltip('Create random array [0-1)');
+        }
+        };
+        
+        // Array Operations
+        // Purpose: Defines a Blockly block for calculating the sum of a NumPy array.
+        // Why used: Provides a visual interface for summing arrays.
+        Blockly.Blocks['numpy_sum'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('np.sum(');
+            this.appendValueInput('ARRAY')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Number');
+            this.setColour(290);
+            this.setTooltip('Sum of array elements');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for calculating the mean of a NumPy array.
+        // Why used: Provides a visual interface for calculating the mean.
+        Blockly.Blocks['numpy_mean'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('np.mean(');
+            this.appendValueInput('ARRAY')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Number');
+            this.setColour(290);
+            this.setTooltip('Mean of array elements');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for reshaping a NumPy array.
+        // Why used: Provides a visual interface for reshaping arrays.
+        Blockly.Blocks['numpy_reshape'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('reshape(');
+            this.appendValueInput('ARRAY')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField('to');
+            this.appendValueInput('SHAPE')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setOutput(true, 'Array');
+            this.setColour(290);
+            this.setTooltip('Reshape array');
+        }
+        };
+        </script>
+        
+        <!-- Matplotlib Blocks -->
+        <script>
+        // Purpose: Defines a Blockly block for creating a Matplotlib plot.
+        // Why used: Provides a visual interface for plotting data.
+        Blockly.Blocks['matplotlib_plot'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('plt.plot(');
+            this.appendValueInput('X')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(',');
+            this.appendValueInput('Y')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(320);
+            this.setTooltip('Create line plot');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for creating a Matplotlib scatter plot.
+        // Why used: Provides a visual interface for creating scatter plots.
+        Blockly.Blocks['matplotlib_scatter'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('plt.scatter(');
+            this.appendValueInput('X')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(',');
+            this.appendValueInput('Y')
+                .setCheck('Array');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(320);
+            this.setTooltip('Create scatter plot');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for setting the title of a Matplotlib plot.
+        // Why used: Provides a visual interface for setting plot titles.
+        Blockly.Blocks['matplotlib_title'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('plt.title(');
+            this.appendValueInput('TITLE')
+                .setCheck('String');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(320);
+            this.setTooltip('Set plot title');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for displaying a Matplotlib plot.
+        // Why used: Provides a visual interface for showing plots.
+        Blockly.Blocks['matplotlib_show'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('plt.show()');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(320);
+            this.setTooltip('Display the plot');
+        }
+        };
+        
+        // Purpose: Defines a Blockly block for setting the labels of a Matplotlib plot.
+        // Why used: Provides a visual interface for setting axis labels.
+        Blockly.Blocks['matplotlib_labels'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField('plt.xlabel(');
+            this.appendValueInput('XLABEL')
+                .setCheck('String');
+            this.appendDummyInput()
+                .appendField(')');
+            this.appendDummyInput()
+                .appendField('plt.ylabel(');
+            this.appendValueInput('YLABEL')
+                .setCheck('String');
+            this.appendDummyInput()
+                .appendField(')');
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(320);
+            this.setTooltip('Set axis labels');
+        }
+        };
+        </script>
+
+        <!-- Python Code Generators -->
+        <script>
+        // NumPy Generators
+        // Purpose: Generates Python code for creating a NumPy array.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_array'] = function(block) {
+        const values = Blockly.Python.valueToCode(block, 'VALUES', Blockly.Python.ORDER_ATOMIC);
+        return [`np.array(${values})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Purpose: Generates Python code for creating a NumPy array of zeros.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_zeros'] = function(block) {
+        const shape = Blockly.Python.valueToCode(block, 'SHAPE', Blockly.Python.ORDER_ATOMIC);
+        return [`np.zeros((${shape},))`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Purpose: Generates Python code for creating a NumPy array of ones.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_ones'] = function(block) {
+        const shape = Blockly.Python.valueToCode(block, 'SHAPE', Blockly.Python.ORDER_ATOMIC);
+        return [`np.ones((${shape},))`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Purpose: Generates Python code for creating a NumPy array with random values.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_random'] = function(block) {
+        const size = Blockly.Python.valueToCode(block, 'SIZE', Blockly.Python.ORDER_ATOMIC);
+        return [`np.random.rand(${size})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Purpose: Generates Python code for calculating the sum of a NumPy array.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_sum'] = function(block) {
+        const arr = Blockly.Python.valueToCode(block, 'ARRAY', Blockly.Python.ORDER_ATOMIC);
+        return [`np.sum(${arr})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Purpose: Generates Python code for calculating the mean of a NumPy array.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_mean'] = function(block) {
+        const arr = Blockly.Python.valueToCode(block, 'ARRAY', Blockly.Python.ORDER_ATOMIC);
+        return [`np.mean(${arr})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Purpose: Generates Python code for reshaping a NumPy array.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['numpy_reshape'] = function(block) {
+        const arr = Blockly.Python.valueToCode(block, 'ARRAY', Blockly.Python.ORDER_ATOMIC);
+        const shape = Blockly.Python.valueToCode(block, 'SHAPE', Blockly.Python.ORDER_ATOMIC);
+        return [`${arr}.reshape(${shape})`, Blockly.Python.ORDER_FUNCTION_CALL];
+        };
+        
+        // Matplotlib Generators
+        // Purpose: Generates Python code for creating a Matplotlib plot.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['matplotlib_plot'] = function(block) {
+        const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_ATOMIC);
+        const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_ATOMIC);
+        return `plt.plot(${x}, ${y})\n`;
+        };
+        
+        // Purpose: Generates Python code for creating a Matplotlib scatter plot.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['matplotlib_scatter'] = function(block) {
+        const x = Blockly.Python.valueToCode(block, 'X', Blockly.Python.ORDER_ATOMIC);
+        const y = Blockly.Python.valueToCode(block, 'Y', Blockly.Python.ORDER_ATOMIC);
+        return `plt.scatter(${x}, ${y})\n`;
+        };
+        
+        // Purpose: Generates Python code for setting the title of a Matplotlib plot.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['matplotlib_title'] = function(block) {
+        const title = Blockly.Python.valueToCode(block, 'TITLE', Blockly.Python.ORDER_ATOMIC);
+        return `plt.title(${title})\n`;
+        };
+        
+        // Purpose: Generates Python code for displaying a Matplotlib plot.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['matplotlib_show'] = function(block) {
+        return 'plt.show()\n';
+        };
+        
+        // Purpose: Generates Python code for setting the labels of a Matplotlib plot.
+        // Why used: Translates the visual block into executable code.
+        Blockly.Python['matplotlib_labels'] = function(block) {
+        const xlabel = Blockly.Python.valueToCode(block, 'XLABEL', Blockly.Python.ORDER_ATOMIC);
+        const ylabel = Blockly.Python.valueToCode(block, 'YLABEL', Blockly.Python.ORDER_ATOMIC);
+        return `plt.xlabel(${xlabel})\nplt.ylabel(${ylabel})\n`;
+        };
+    </script>
+    <script>
+        // Constants
+        // Purpose: Defines the interval for autosaving the workspace.
+        // Why used: To automatically save the user's progress at regular intervals.
+        const AUTOSAVE_INTERVAL = 60000; // 1 minute
+        // Purpose: Defines the API endpoint for executing Python code.
+        // Why used: To specify the URL where the code execution requests are sent.
+        const API_ENDPOINT = 'http://localhost:5000/execute';
+        // Purpose: Defines the timeout for API requests.
+        // Why used: To prevent indefinite waiting for a response from the server.
+        const API_TIMEOUT = 10000; // 10 seconds
+        // Purpose: Stores the timestamp of the last save operation.
+        // Why used: To track when the workspace was last saved for autosaving purposes.
+        let lastSave = Date.now();
+        // Purpose: Declares a variable to hold the Blockly workspace instance.
+        // Why used: To provide a global reference to the Blockly workspace for manipulation.
+        let workspace;
+
+        // Initialize workspace with error handling
+        // Purpose: Initializes the Blockly workspace.
+        // Why used: To create the interactive coding environment where users can drag and drop blocks.
+        try {
+            workspace = Blockly.inject('blocklyDiv', {
+                toolbox: document.getElementById('toolbox'),
+                scrollbars: true,
+                move: {
+                    scrollbars: true,
+                    drag: true,
+                    wheel: true
+                },
+                zoom: {
+                    controls: true,
+                    wheel: true,
+                    startScale: 1.0,
+                    maxScale: 3,
+                    minScale: 0.3,
+                    scaleSpeed: 1.2,
+                    pinch: true
+                },
+                trashcan: true,
+                grid: {
+                    spacing: 20,
+                    length: 3,
+                    colour: '#ccc',
+                    snap: true
+                },
+                theme: Blockly.Theme.defineTheme('modern', {
+                    'base': Blockly.Themes.Classic,
+                    'componentStyles': {
+                        'workspaceBackgroundColour': '#f8f9fa',
+                        'toolboxBackgroundColour': '#fff',
+                        'toolboxForegroundColour': '#212529',
+                        'flyoutBackgroundColour': '#fff',
+                        'toolboxForegroundColour': '#212529',
+                        'flyoutForegroundColour': '#212529',
+                        'flyoutOpacity': 0.9,
+                        'scrollbarColor': '#cdcdcd',
+                        'insertionMarkerColor': '#29b6f6',
+                        'insertionMarkerOpacity': 0.3,
+                        'scrollbarOpacity': 0.4,
+                        'cursorColor': '#d0d0d0'
+                    }
+                })
+            });
+        } catch (error) {
+            console.error('Workspace initialization error:', error);
+            showError('Failed to initialize workspace. Please refresh the page.');
+        }
+
+        // Enhanced error handling utility
+        // Purpose: Displays an error message in the output console.
+        // Why used: To provide feedback to the user when an error occurs.
+        function showError(message, technical = '') {
+            const output = document.getElementById('output');
+            output.style.display = 'block';
+            output.innerHTML = `
+                <div class="error-line">${message}</div>
+                ${technical ? `<div class="technical-error">${technical}</div>` : ''}
+            `;
+            console.error(message, technical);
+        }
+
+        // Improved code execution with proper error handling and timeout
+        // Purpose: Executes the Python code generated from the Blockly workspace.
+        // Why used: To run the user's code and display the output or any errors.
+        async function runCode() {
+            const loading = document.querySelector('.loading');
+            const runButton = document.getElementById('runButton');
+            const output = document.getElementById('output');
+            
+            try {
+                loading.style.display = 'block';
+                runButton.disabled = true;
+                output.style.display = 'block';
+                output.innerHTML = '<div class="info-line">Running code...</div>';
+
+                const imports = "import numpy as np\nimport matplotlib.pyplot as plt\n";
+                const code = imports + Blockly.Python.workspaceToCode(workspace);
+
+                // Validate code before sending
+                // Purpose: Checks if the generated code is empty.
+                // Why used: To prevent sending empty code to the server.
+                if (!code.trim()) {
+                    throw new Error('No code to execute. Please add some blocks.');
+                }
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
+
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ code: code }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Handle different response types
+                output.innerHTML = '';
+                if (data.error) {
+                    output.innerHTML += `<div class="error-line">${data.error}</div>`;
+                }
+                if (data.output) {
+                    output.innerHTML += `<div class="success-line">${data.output}</div>`;
+                }
+                if (data.plot) {
+                    const img = new Image();
+                    img.src = 'data:image/png;base64,' + data.plot;
+                    img.className = 'img-fluid mt-3';
+                    img.alt = 'Plot output';
+                    output.appendChild(img);
+                }
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showError('Code execution timed out. Please simplify your code or try again.');
+                } else {
+                    showError('Execution error:', error.message);
+                }
+            } finally {
+                loading.style.display = 'none';
+                runButton.disabled = false;
+            }
+        }
+
+        // Improved workspace management functions
+        // Purpose: Saves the current Blockly workspace to the server.
+        // Why used: To persist the user's progress and allow them to resume later.
+        function saveWorkspace() {
+            if (!window.workspace) {
+                console.error("Blockly workspace not initialized.");
+                return;
+            }
+            // Convert the Blockly workspace to XML text.
+            var xml = Blockly.Xml.workspaceToDom(window.workspace);
+            var xmlText = Blockly.Xml.domToText(xml);
+            
+            // Send data to Flask endpoint for manual save.
+            // Adjust user_id and project_name as needed.
+            fetch('http://localhost:5000/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: 1,                  // Change accordingly if using dynamic user IDs
+                    project_name: "Manual Save",
+                    data: xmlText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Project saved successfully!");
+                console.log("Manual save:", data.message);
+            })
+            .catch(err => {
+                console.error("SaveWorkspace error:", err);
+                alert("Failed to save project. Please try again.");
+            });
+        }
+
+        // Purpose: Loads a saved Blockly workspace from the server.
+        // Why used: To retrieve the user's previously saved progress.
+        function loadWorkspace() {
+            if (!window.workspace) {
+                console.error("Blockly workspace not initialized.");
+                return;
+            }
+        
+            fetch('http://127.0.0.1:5000/projects/1')  // Adjust user_id as needed
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        // Get the most recent save (first in array)
+                        let latestProject = data[0];
+                        let xmlText = latestProject.data;
+                        
+                        try {
+                            let xmlDom = Blockly.Xml.textToDom(xmlText);
+                            Blockly.Xml.clearWorkspaceAndLoadFromXml(xmlDom, window.workspace);
+                            alert("Project loaded successfully!");
+                        } catch (e) {
+                            console.error("Error parsing XML:", e);
+                            alert("Error loading project. Please try again.");
+                        }
+                    } else {
+                        alert("No saved projects found.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error loading workspace:", err);
+                    alert("Failed to load project. Please try again.");
+                });
+        }
+
+        // New function to export Python code
+        // Purpose: Exports the current Blockly workspace as a Python file.
+        // Why used: To allow users to download their code and use it outside of the Blockly environment.
+        function exportPython() {
+            try {
+                const code = Blockly.Python.workspaceToCode(workspace);
+                const blob = new Blob([code], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'python_code.py';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                showError('Failed to export Python code:', error.message);
+            }
+        }
+
+        // Clear workspace with confirmation
+        // Purpose: Clears the current Blockly workspace.
+        // Why used: To provide a way to start with a fresh workspace.
+        function clearWorkspace() {
+            if (confirm('Are you sure you want to clear the workspace? This cannot be undone.')) {
+                try {
+                    workspace.clear();
+                    showToast('Workspace cleared');
+                } catch (error) {
+                    showError('Failed to clear workspace:', error.message);
+                }
+            }
+        }
+
+        // Improved toast notification system
+        // Purpose: Displays a toast notification message.
+        // Why used: To provide non-intrusive feedback to the user.
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} position-fixed bottom-0 end-0 m-3`;
+            toast.style.zIndex = 2000;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // Toggle output console
+        // Purpose: Toggles the visibility of the output console.
+        // Why used: To allow users to hide or show the console as needed.
+        function toggleOutput() {
+            const output = document.getElementById('output');
+            output.style.display = output.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Auto-save setup with error handling
+        // Purpose: Sets up an automatic save mechanism for the workspace.
+        // Why used: To ensure that the user's progress is saved periodically without manual intervention.
+        workspace.addChangeListener(() => {
+            if (Date.now() - lastSave > AUTOSAVE_INTERVAL) {
+                try {
+                    saveWorkspace();
+                    lastSave = Date.now();
+                } catch (error) {
+                    console.error('Auto-save error:', error);
+                }
+            }
+        });
+
+        // Load workspace on page load
+        window.addEventListener('load', () => {
+
+        });
+    </script>
+        <script>
+            // Purpose: Attempts to load a previously saved workspace when the page loads.
+            // Why used: To restore the user's work from a previous session.
+            try {
+            loadWorkspace();
+            } catch (error) {
+            // Purpose: Handles errors that occur during the loading of the workspace.
+            // Why used: To prevent the application from crashing if loading fails and to inform the user.
+            showError('Failed to load initial workspace:', error.message);
+            }
+
+            // Purpose: Handles the event when the user tries to leave the page.
+            // Why used: To prevent the user from accidentally losing unsaved work.
+            window.addEventListener('beforeunload', (e) => {
+            // Purpose: Checks if the workspace contains any code.
+            // Why used: To determine if there is unsaved work that the user might want to save.
+            if (Blockly.Python.workspaceToCode(workspace).trim()) {
+                // Purpose: Prevents the user from leaving the page without a warning.
+                // Why used: To ensure that the user is aware of the unsaved changes.
+                e.preventDefault();
+                e.returnValue = '';
+            }
+            });
+
+            // Purpose: Selects the HTML element with the ID 'rainbowText'.
+            // Why used: To apply a rainbow hover effect to this element.
+            const rainbowText = document.getElementById('rainbowText');
+
+            // Purpose: Adds an event listener to the 'rainbowText' element that triggers when the mouse moves over it.
+            // Why used: To initiate the rainbow hover effect when the mouse is over the text.
+            rainbowText.addEventListener('mousemove', (e) => {
+            // Purpose: Gets the bounding rectangle of the 'rainbowText' element.
+            // Why used: To determine the position and size of the element for calculating the hover effect.
+            const rect = rainbowText.getBoundingClientRect();
+            // Purpose: Calculates the x-coordinate of the mouse relative to the left edge of the 'rainbowText' element.
+            // Why used: To position the rainbow effect based on the mouse's location.
+            const x = e.clientX - rect.left;
+            // Purpose: Calculates the y-coordinate of the mouse relative to the top edge of the 'rainbowText' element.
+            // Why used: To position the rainbow effect based on the mouse's location.
+            const y = e.clientY - rect.top;
+
+            // Purpose: Selects all the <span> elements within the 'rainbowText' element.
+            // Why used: To apply the rainbow effect to each individual character in the text.
+            const spans = rainbowText.querySelectorAll('span');
+            // Purpose: Iterates over each <span> element.
+            // Why used: To apply the rainbow effect to each character individually.
+            spans.forEach(span => {
+                // Purpose: Gets the bounding rectangle of the current <span> element.
+                // Why used: To determine the position and size of the span for calculating the hover effect.
+                const spanRect = span.getBoundingClientRect();
+                // Purpose: Calculates the x-coordinate of the mouse relative to the left edge of the current <span> element.
+                // Why used: To position the rainbow effect on the individual character.
+                const spanX = e.clientX - spanRect.left;
+                // Purpose: Calculates the y-coordinate of the mouse relative to the top edge of the current <span> element.
+                // Why used: To position the rainbow effect on the individual character.
+                const spanY = e.clientY - spanRect.top;
+
+                // Purpose: Checks if the mouse is within the bounds of the current <span> element.
+                // Why used: To only apply the rainbow effect to the character that the mouse is currently hovering over.
+                if (spanX >= 0 && spanX <= spanRect.width && spanY >= 0 && spanY <= spanRect.height) {
+                // Purpose: Makes the text of the <span> element transparent.
+                // Why used: To reveal the rainbow background behind the text.
+                span.style.color = 'transparent';
+                // Purpose: Sets a CSS variable '--x' to the x-coordinate of the mouse relative to the <span> element.
+                // Why used: To position the rainbow background based on the mouse's location.
+                span.style.setProperty('--x', `${spanX}px`);
+                // Purpose: Sets a CSS variable '--y' to the y-coordinate of the mouse relative to the <span> element.
+                // Why used: To position the rainbow background based on the mouse's location.
+                span.style.setProperty('--y', `${spanY}px`);
+                // Purpose: Sets the background position of the <span> element to the mouse's coordinates.
+                // Why used: To create the rainbow hover effect by moving the background.
+                span.style.backgroundPosition = `${spanX}px ${spanY}px`;
+                } else {
+                // Purpose: Resets the color of the <span> element if the mouse is not hovering over it.
+                // Why used: To remove the rainbow effect when the mouse moves away from the character.
+                span.style.color = '';
+                }
+            });
+            });
+
+            // Purpose: Adds an event listener to the 'rainbowText' element that triggers when the mouse leaves it.
+            // Why used: To remove the rainbow hover effect when the mouse is no longer over the text.
+            rainbowText.addEventListener('mouseleave', () => {
+            // Purpose: Selects all the <span> elements within the 'rainbowText' element.
+            // Why used: To reset the styles of all the characters.
+            const spans = rainbowText.querySelectorAll('span');
+            // Purpose: Iterates over each <span> element.
+            // Why used: To reset the styles of each character individually.
+            spans.forEach(span => {
+                // Purpose: Resets the color of the <span> element.
+                // Why used: To remove the rainbow effect.
+                span.style.color = '';
+            });
+            });
+        </script>
+    <script>
+    // Wrap DOM-dependent code inside a DOMContentLoaded event
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: Accessing the console output element safely
+        // Purpose: To safely access the console output element.
+        // Why used: Ensures that the element exists before attempting to manipulate it, preventing errors.
+        const output = document.getElementById('output');
+        if (output) {
+        // Now it won't throw an error because output exists
+        // Purpose: To hide the output element initially.
+        // Why used: To keep the console hidden until explicitly toggled by the user.
+        output.style.display = 'none';
+        }
+
+        // Rainbow hover effect initialization
+        // Purpose: To initialize the rainbow hover effect on the rainbowText element.
+        // Why used: To add interactivity and visual appeal to the specified text.
+        const rainbowText = document.getElementById('rainbowText');
+        if (rainbowText) {
+        // Purpose: To add an event listener for mousemove events on the rainbowText element.
+        // Why used: To trigger the rainbow effect whenever the mouse moves over the text.
+        rainbowText.addEventListener('mousemove', (e) => {
+            // Purpose: To get the bounding rectangle of the rainbowText element.
+            // Why used: To determine the size and position of the text for calculating the hover effect.
+            const rect = rainbowText.getBoundingClientRect();
+            // Purpose: To select all the <span> elements within the rainbowText element.
+            // Why used: To apply the rainbow effect to each individual character in the text.
+            const spans = rainbowText.querySelectorAll('span');
+            // Purpose: To iterate over each <span> element.
+            // Why used: To apply the rainbow effect to each character individually.
+            spans.forEach(span => {
+            // Purpose: To get the bounding rectangle of the current <span> element.
+            // Why used: To determine the size and position of the span for calculating the hover effect.
+            const spanRect = span.getBoundingClientRect();
+            // Purpose: To calculate the x-coordinate of the mouse relative to the left edge of the current <span> element.
+            // Why used: To position the rainbow effect on the individual character.
+            const spanX = e.clientX - spanRect.left;
+            // Purpose: To calculate the y-coordinate of the mouse relative to the top edge of the current <span> element.
+            // Why used: To position the rainbow effect on the individual character.
+            const spanY = e.clientY - spanRect.top;
+            // Purpose: To check if the mouse is within the bounds of the current <span> element.
+            // Why used: To only apply the rainbow effect to the character that the mouse is currently hovering over.
+            if (spanX >= 0 && spanX <= spanRect.width && spanY >= 0 && spanY <= spanRect.height) {
+                // Purpose: To make the text of the <span> element transparent.
+                // Why used: To reveal the rainbow background behind the text.
+                span.style.color = 'transparent';
+                // Purpose: To set a CSS variable '--x' to the x-coordinate of the mouse relative to the <span> element.
+                // Why used: To position the rainbow background based on the mouse's location.
+                span.style.setProperty('--x', `${spanX}px`);
+                // Purpose: To set a CSS variable '--y' to the y-coordinate of the mouse relative to the <span> element.
+                // Why used: To position the rainbow background based on the mouse's location.
+                span.style.setProperty('--y', `${spanY}px`);
+                // Purpose: To set the background position of the <span> element to the mouse's coordinates.
+                // Why used: To create the rainbow hover effect by moving the background.
+                span.style.backgroundPosition = `${spanX}px ${spanY}px`;
+            } else {
+                // Purpose: To reset the color of the <span> element if the mouse is not hovering over it.
+                // Why used: To remove the rainbow effect when the mouse moves away from the character.
+                span.style.color = '';
+            }
+            });
+        });
+        
+        // Purpose: To add an event listener for mouseleave events on the rainbowText element.
+        // Why used: To remove the rainbow effect when the mouse leaves the text.
+        rainbowText.addEventListener('mouseleave', () => {
+            // Purpose: To select all the <span> elements within the rainbowText element.
+            // Why used: To reset the styles of all the characters.
+            const spans = rainbowText.querySelectorAll('span');
+            // Purpose: To iterate over each <span> element.
+            // Why used: To reset the styles of each character individually.
+            spans.forEach(span => {
+            // Purpose: To reset the color of the <span> element.
+            // Why used: To remove the rainbow effect.
+            span.style.color = '';
+            });
+        });
+        }
+    });
+    </script>
+<script>
+// Purpose: To ensure that the DOM is fully loaded before executing the script.
+// Why used: Prevents errors that can occur when trying to access elements that haven't been created yet.
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize output console and run button
+    // Purpose: To get references to the output console and run button elements.
+    // Why used: Allows the script to interact with these elements.
+    const output = document.getElementById('output');
+    const runButton = document.getElementById('runButton');
+
+    // Purpose: To define an asynchronous function to run the code.
+    // Why used: Allows the code to be executed without blocking the main thread.
+    async function runCode() {
+        // Purpose: To check if the output and runButton elements exist.
+        // Why used: Prevents errors if the elements are not found.
+        if (!output || !runButton) {
+            console.error('Required DOM elements not found');
+            return;
+        }
+        // Disable run button and show loading state
+        // Purpose: To disable the run button and display a loading message.
+        // Why used: Provides visual feedback to the user that the code is running.
+        runButton.disabled = true;
+        output.style.display = 'block';
+        output.innerHTML = '<div class="info-line">Running code...</div>';
+
+        // Get code from workspace
+        // Purpose: To get the code from the Blockly workspace.
+        // Why used: To retrieve the code that the user has created.
+        const code = Blockly.Python.workspaceToCode(workspace);
+        
+        // Purpose: To check if the code is empty.
+        // Why used: Prevents errors if the user tries to run empty code.
+        if (!code.trim()) {
+            output.innerHTML = `<div class="error-line">No code to execute. Please add some blocks.</div>`;
+            runButton.disabled = false;
+            return;
+        }
+
+        try {
+            // Set up request with timeout
+            // Purpose: To set up a request with a timeout.
+            // Why used: Prevents the code from running indefinitely if there is an error.
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+            // Purpose: To send the code to the server for execution.
+            // Why used: Allows the code to be executed in a Python environment.
+            const response = await fetch('http://127.0.0.1:5000/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code }),
+                signal: controller.signal
+            });
+
+            // Purpose: To clear the timeout.
+            // Why used: Prevents the timeout from being triggered if the code completes successfully.
+            clearTimeout(timeoutId);
+
+            // Purpose: To check if the response was successful.
+            // Why used: Prevents errors if the server returns an error.
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Purpose: To parse the response as JSON.
+            // Why used: Allows the script to access the data returned by the server.
+            const data = await response.json();
+            output.innerHTML = '';
+
+            // Display error, output, and/or plot if provided
+            // Purpose: To display the error, output, and/or plot returned by the server.
+            // Why used: Provides feedback to the user about the code execution.
+            if (data.error) {
+                output.innerHTML += `<div class="error-line">${data.error}</div>`;
+            }
+            if (data.output) {
+                output.innerHTML += `<div class="success-line">${data.output}</div>`;
+            }
+            if (data.plot) {
+                const img = new Image();
+                img.src = 'data:image/png;base64,' + data.plot;
+                img.className = 'plot-output mt-3';
+                img.alt = 'Plot output';
+                output.appendChild(img);
+            }
+
+        } catch (error) {
+            // Purpose: To handle errors that occur during code execution.
+            // Why used: Prevents the script from crashing and provides informative error messages to the user.
+            let errorMessage = 'An error occurred while executing the code.';
+            if (error.name === 'AbortError') {
+                errorMessage = 'Code execution timed out. Please simplify your code or try again.';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Could not connect to the server. Please make sure the Python server is running.';
+            } else {
+                errorMessage = `Error: ${error.message}`;
+            }
+            output.innerHTML = `<div class="error-line">${errorMessage}</div>`;
+            console.error('Execution error:', error);
+        } finally {
+            // Purpose: To re-enable the run button.
+            // Why used: Allows the user to run the code again.
+            runButton.disabled = false;
+        }
+    }
+
+    // Attach event listener to run button
+    // Purpose: To attach an event listener to the run button.
+    // Why used: Triggers the runCode function when the button is clicked.
+    if (runButton) {
+        runButton.addEventListener('click', runCode);
+    }
+
+    // Optionally, hide the output console initially
+    // Purpose: To hide the output console initially.
+    // Why used: Keeps the console hidden until the user explicitly shows it.
+    if (output) {
+        output.style.display = 'none';
+    }
+});
+</script>
+<script>
+  // Existing saveWorkspace() function modified to send workspace XML to Flask for manual save.
+  // Purpose: To save the current Blockly workspace to the server for manual saving.
+  // Why used: Allows users to manually save their progress.
+  function saveWorkspace() {
+      // Purpose: To check if the Blockly workspace is initialized.
+      // Why used: Prevents errors if the workspace is not initialized.
+      if (!window.workspace) {
+          console.error("Blockly workspace not initialized.");
+          return;
+      }
+      // Convert the Blockly workspace to XML text.
+      // Purpose: To convert the Blockly workspace to XML text.
+      // Why used: Allows the workspace to be saved as a string.
+      var xml = Blockly.Xml.workspaceToDom(window.workspace);
+      var xmlText = Blockly.Xml.domToText(xml);
+      
+      // Send data to Flask endpoint for manual save.
+      // Adjust user_id and project_name as needed.
+      // Purpose: To send the workspace XML to the Flask endpoint for manual saving.
+      // Why used: Persists the workspace data on the server.
+      fetch('http://127.0.0.1:5000/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              user_id: 1,                  // Change accordingly if using dynamic user IDs
+              project_name: "Manual Save",
+              data: xmlText
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          alert("Project saved successfully!");
+          console.log("Manual save:", data.message);
+      })
+      .catch(err => {
+          console.error("SaveWorkspace error:", err);
+          alert("Failed to save project. Please try again.");
+      });
+  }
+
+  // Auto-save workspace every 1 minute (60000 ms).
+  // Purpose: To automatically save the workspace every 1 minute.
+  // Why used: Prevents data loss in case of unexpected events.
+  setInterval(function() {
+      // Purpose: To check if the Blockly workspace is initialized.
+      // Why used: Prevents errors if the workspace is not initialized.
+      if (!window.workspace) {
+          console.error("Blockly workspace not initialized.");
+          return;
+      }
+      // Convert the Blockly workspace to XML text.
+      // Purpose: To convert the Blockly workspace to XML text.
+      // Why used: Allows the workspace to be saved as a string.
+      var xml = Blockly.Xml.workspaceToDom(window.workspace);
+      var xmlText = Blockly.Xml.domToText(xml);
+      
+      // Send data to Flask endpoint for auto-save.
+      // Purpose: To send the workspace XML to the Flask endpoint for auto-saving.
+      // Why used: Persists the workspace data on the server automatically.
+      fetch('http://127.0.0.1:5000/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              user_id: 1,                  // Adjust user_id as needed.
+              project_name: "Auto Save",
+              data: xmlText
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log("Auto-save:", data.message);
+          // Optional: Show brief notification
+          // Purpose: To show a brief notification when the workspace is auto-saved.
+          // Why used: Provides feedback to the user that the workspace has been saved.
+          const notification = document.createElement('div');
+          notification.textContent = "Auto-saved";
+          notification.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:10px;background:#28a745;color:white;border-radius:5px;opacity:0.9;';
+          document.body.appendChild(notification);
+          setTimeout(() => notification.remove(), 2000);
+      })
+      .catch(err => console.error("Auto-save error:", err));
+  }, 60000);  // 60,000ms = 1 minute
+</script>
+</body>
+</html>
